@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+/data/processed/*
+/data/outputs/*
+/web/*.html
+!/data/processed/README.md
+!/data/outputs/README.md
+!/web/README.md

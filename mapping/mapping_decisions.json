@@ -1,0 +1,494 @@
+{
+  "version": "first-pass-resolved-2026-06-18",
+  "sfia_mapping": {
+    "User focus": [
+      "UNAN",
+      "URCH"
+    ],
+    "Availability and capacity management": [
+      "AVMT",
+      "CPMG"
+    ],
+    "Continual service improvement": [
+      "ITMG",
+      "BPRE"
+    ],
+    "Service management framework knowledge": [
+      "ITMG"
+    ],
+    "Asset and configuration management": [
+      "ASMG",
+      "CFMG"
+    ],
+    "Modern development standards": [
+      "SLEN",
+      "METL"
+    ],
+    "Change management": [
+      "CHMG"
+    ],
+    "Prototyping": [
+      "HCEV",
+      "SWDN"
+    ],
+    "Testing": [
+      "TEST",
+      "NFTS"
+    ],
+    "Designing for everyone": [
+      "ACIN",
+      "SUST"
+    ],
+    "Designing strategically": [
+      "HCEV",
+      "ITSP",
+      "OCDV"
+    ],
+    "Designing together": [
+      "HCEV",
+      "RLMT"
+    ],
+    "Evidence-based design": [
+      "HCEV",
+      "URCH"
+    ],
+    "Iterative design": [
+      "HCEV"
+    ],
+    "Leading design": [
+      "HCEV",
+      "OCDV"
+    ],
+    "Data ethics and privacy": [
+      "AIDE",
+      "PEDP"
+    ],
+    "Programming and build (software engineering)": [
+      "PROG",
+      "SLEN"
+    ],
+    "Service support": [
+      "ASUP",
+      "ITOP"
+    ],
+    "Strategic thinking": [
+      "ITSP"
+    ],
+    "Systems integration": [
+      "SINT"
+    ],
+    "Communicating analysis and insight": [
+      "DAAN",
+      "VISL"
+    ],
+    "Stakeholder relationship management": [
+      "RLMT"
+    ],
+    "Problem management": [
+      "PBMG"
+    ],
+    "Data innovation": [
+      "INOV",
+      "EMRG"
+    ],
+    "Architect for the whole context": [
+      "STPL",
+      "ARCH"
+    ],
+    "Architecture communication": [
+      "STPL",
+      "ARCH"
+    ],
+    "Development process optimisation": [
+      "BPRE"
+    ],
+    "Making architectural decisions": [
+      "STPL",
+      "ARCH"
+    ],
+    "Strategy design": [
+      "ITSP",
+      "STPL"
+    ],
+    "IT service reporting": [
+      "MEAS",
+      "SLMO"
+    ],
+    "Context, problem and option analysis": [
+      "BUSA"
+    ],
+    "Data analysis and synthesis": [
+      "DAAN",
+      "DATS"
+    ],
+    "Metadata management": [
+      "DATM"
+    ],
+    "Incident management": [
+      "USUP"
+    ],
+    "Systems design": [
+      "DESN"
+    ],
+    "Information security": [
+      "SCTY"
+    ],
+    "Continuity management": [
+      "COPL"
+    ],
+    "Life cycle management": [
+      "PROD",
+      "DEMG"
+    ],
+    "Managing a data project": [
+      "PRMG",
+      "DAAN"
+    ],
+    "Technical design throughout the life cycle": [
+      "ARCH",
+      "DESN"
+    ],
+    "Designing and executing tests": [
+      "TEST",
+      "NFTS"
+    ],
+    "Test analysis": [
+      "TEST",
+      "NFTS",
+      "QUAS"
+    ],
+    "Test engineering": [
+      "TEST",
+      "NFTS",
+      "PROG"
+    ],
+    "Agile and Lean practices": [
+      "DEMG",
+      "METL"
+    ],
+    "Managing, reporting and resolving defects": [
+      "TEST",
+      "NFTS",
+      "QUAS"
+    ],
+    "Quality assurance of data and analysis": [
+      "QUAS",
+      "DAAN"
+    ],
+    "Test and quality planning": [
+      "TEST",
+      "QUAS"
+    ],
+    "Commercial perspective": [
+      "SORC",
+      "SUPP"
+    ],
+    "Problem definition and shaping": [
+      "BUSA"
+    ],
+    "IT infrastructure": [
+      "ITOP",
+      "IFDN"
+    ],
+    "Applied maths, statistics and scientific practices": [
+      "DATS",
+      "DAAN"
+    ],
+    "Governance and assurance": [
+      "GOVN",
+      "QUAS"
+    ],
+    "Coding and scripting": [
+      "PROG"
+    ],
+    "Turning business problems into data design": [
+      "BUSA",
+      "DTAN"
+    ],
+    "Data science innovation": [
+      "DATS"
+    ],
+    "Programming and build (data and analytics engineering)": [
+      "PROG",
+      "DENG"
+    ],
+    "Data management": [
+      "DATM"
+    ],
+    "Business analysis (IT operations)": [
+      "BUSA"
+    ],
+    "Adapting to delivery methodologies": [
+      "METL",
+      "DEMG"
+    ],
+    "Consultancy": [
+      "CNSL"
+    ],
+    "Agile working": [
+      "DEMG",
+      "METL"
+    ],
+    "Delivering business impact through data": [
+      "DAAN",
+      "BINT"
+    ],
+    "Stakeholder relationship management (IT operations)": [
+      "RLMT"
+    ],
+    "Data modelling": [
+      "DTAN"
+    ],
+    "Strategic ownership": [
+      "PROD",
+      "ITSP"
+    ],
+    "Data engineering": [
+      "DENG"
+    ],
+    "Business process improvement": [
+      "BPRE"
+    ],
+    "Accessibility": [
+      "ACIN"
+    ],
+    "Agile research practices": [
+      "URCH",
+      "METL"
+    ],
+    "User-centred practice and advocacy": [
+      "URCH",
+      "UNAN"
+    ],
+    "User research methods": [
+      "URCH"
+    ],
+    "Analysis and synthesis": [
+      "URCH",
+      "UNAN"
+    ],
+    "Data standards": [
+      "DATM"
+    ],
+    "Understanding product delivery": [
+      "DEMG"
+    ],
+    "Defining and managing business needs, user needs and requirements": [
+      "REQM",
+      "BUSA"
+    ],
+    "Testing (business analysis)": [
+      "TEST",
+      "BPTS"
+    ],
+    "User focus (frontend developer)": [
+      "UNAN",
+      "HCEV"
+    ],
+    "Content management and architecture": [
+      "INCA",
+      "ICPM"
+    ],
+    "Web performance optimisation": [
+      "NFTS",
+      "PROG"
+    ],
+    "Programming and build (data science)": [
+      "PROG",
+      "DATS"
+    ],
+    "Programming and build (frontend developer)": [
+      "PROG",
+      "SWDN"
+    ],
+    "Digital and data systems analysis": [
+      "BUSA",
+      "DAAN"
+    ],
+    "Developing data science capability": [
+      "DATS",
+      "OCDV"
+    ],
+    "Enabling and informing risk-based decisions": [
+      "BURM"
+    ],
+    "Delivering business impact": [
+      "DAAN",
+      "BINT"
+    ],
+    "Inclusive research": [
+      "URCH",
+      "ACIN"
+    ],
+    "Business modelling": [
+      "BSMO"
+    ],
+    "Creating value for money": [
+      "COMG",
+      "INVA"
+    ],
+    "Systems design (frontend developer)": [
+      "SWDN",
+      "DESN"
+    ],
+    "Systems integration (frontend developer)": [
+      "SINT"
+    ],
+    "Analysis and insight": [
+      "DAAN",
+      "BINT"
+    ],
+    "Evaluation delivery": [
+      "MEAS",
+      "RSCH"
+    ],
+    "Performance measurement": [
+      "MEAS"
+    ],
+    "Making a process work": [
+      "BPRE"
+    ],
+    "Maintaining delivery momentum": [
+      "DEMG"
+    ],
+    "Product and service monitoring": [
+      "PROD",
+      "MEAS"
+    ],
+    "Acceptance criteria": [
+      "BPTS",
+      "REQM"
+    ],
+    "Availability management": [
+      "AVMT"
+    ],
+    "Capacity management": [
+      "CPMG"
+    ],
+    "Release and deployment": [
+      "RELM"
+    ],
+    "Business architecture": [
+      "STPL",
+      "BSMO"
+    ],
+    "Enterprise architecture": [
+      "STPL"
+    ],
+    "Solution architecture": [
+      "ARCH"
+    ],
+    "Technical architecture": [
+      "ARCH",
+      "DESN"
+    ],
+    "Network design": [
+      "NTDS"
+    ],
+    "Infrastructure design": [
+      "IFDN"
+    ],
+    "Programming/software development": [
+      "PROG"
+    ],
+    "Software design": [
+      "SWDN"
+    ],
+    "Content design": [
+      "INCA"
+    ],
+    "Content publishing": [
+      "ICPM"
+    ],
+    "User research": [
+      "URCH"
+    ],
+    "User experience analysis": [
+      "UNAN"
+    ],
+    "User experience design": [
+      "HCEV"
+    ],
+    "Methods and tools": [
+      "METL"
+    ],
+    "Benefits management": [
+      "BENM"
+    ],
+    "Portfolio management": [
+      "POMG"
+    ],
+    "Programme management": [
+      "PGMG"
+    ],
+    "Project management": [
+      "PRMG"
+    ],
+    "Product management": [
+      "PROD"
+    ],
+    "Delivery management": [
+      "DEMG"
+    ],
+    "Business analysis": [
+      "BUSA"
+    ],
+    "Requirements definition and management": [
+      "REQM"
+    ],
+    "Risk management": [
+      "BURM"
+    ],
+    "Information assurance": [
+      "INAS"
+    ],
+    "Artificial intelligence and data ethics": [
+      "AIDE"
+    ],
+    "Machine learning": [
+      "MLNG"
+    ],
+    "Data visualisation": [
+      "VISL"
+    ],
+    "Business intelligence": [
+      "BINT"
+    ],
+    "Measurement": [
+      "MEAS"
+    ],
+    "Formal research": [
+      "RSCH"
+    ],
+    "Documentation": [
+      "DOCU"
+    ],
+    "Brand management": [
+      "BRMG"
+    ]
+  },
+  "generic_attribute": [
+    "Communicating between the technical and non-technical",
+    "Ownership and initiative",
+    "Making and guiding decisions",
+    "Community collaboration",
+    "Communicating information",
+    "Research management, leadership and assurance",
+    "Leadership and guidance (frontend developer)"
+  ],
+  "role_context_dependent": [
+    "Technical understanding",
+    "Service focus",
+    "Design communication",
+    "Planning",
+    "Troubleshooting and problem resolution"
+  ],
+  "ignored_heading": [
+    "Technical specialism"
+  ],
+  "notes": [
+    "BUAN is not present in the uploaded SFIA 9 workbook; BUSA is used instead.",
+    "TESTA is not present in the uploaded SFIA 9 workbook; TEST/NFTS/PROG are used for test engineering.",
+    "Mappings not explicitly listed are resolved by the build script using a deterministic title/description fallback."
+  ]
+}

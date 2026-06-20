@@ -1,0 +1,26 @@
+{
+  "capability_level_base_range": {
+    "Awareness":   [1, 2],
+    "Working":     [2, 3],
+    "Practitioner":[3, 4],
+    "Expert":      [4, 5]
+  },
+  "role_band_shift": {
+    "Apprentice":          0,
+    "Associate":           0,
+    "Junior":              0,
+    "Practitioner":        0,
+    "Senior":              1,
+    "Practitioner/Manager":1,
+    "Lead":                1,
+    "Principal":           1,
+    "Head/Chief":          1
+  },
+  "sfia_level_ceiling": 6,
+  "notes": [
+    "Capability level is the primary driver of the recommended range.",
+    "Role band applies a subtle +1 shift for senior/lead/head roles only.",
+    "SFIA level 7 is reserved for C-suite/Director experience outside this framework.",
+    "Ranges may be wider than 2 levels where multiple capabilities overlap on the same SFIA skill."
+  ]
+}
