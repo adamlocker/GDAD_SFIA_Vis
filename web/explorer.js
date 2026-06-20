@@ -243,6 +243,17 @@ function toggle(d) {
   else { d.children = d._children; d._children = null; }
 }
 function trunc(s, n) { return s && s.length > n ? s.slice(0, n-1) + '…' : s; }
+function govLevelBadge(level) {
+  const map = {
+    'Awareness':    ['Aw', 'awareness'],
+    'Working':      ['W',  'working'],
+    'Practitioner': ['P',  'practitioner'],
+    'Expert':       ['E',  'expert'],
+    'Master':       ['M',  'master'],
+  };
+  const [abbr, cls] = map[level] || (level ? [level[0], 'working'] : ['?', 'working']);
+  return `<span class="gov-level-pip gov-lvl-${cls}">${abbr}</span>`;
+}
 function dimOthers(hovered) {
   const focus = new Set();
   // All ancestors (path to root)
@@ -331,7 +342,7 @@ function showDetail(d) {
       h += `<div class="sfia-chip">${rangeBadge(s.min,s.max)}<button class="code nav-code" onclick="navigateToNode('${s.id}')" title="Jump to this skill in the tree">${s.sfia_code}</button><span style="flex:1">${s.name.replace(/^[A-Z]+ — /,'')}</span></div>`;
     });
     h += `</div><div class="detail-section"><h3>Gov. capabilities (${caps.length})</h3>`;
-    caps.forEach(c => { h += `<div class="cap-row"><span style="flex:1">${c.data.name}</span><span class="gov-level-tag">${c.data.gov_level}</span></div>`; });
+    caps.forEach(c => { h += `<div class="cap-chip">${govLevelBadge(c.data.gov_level)}<span style="flex:1">${c.data.name}</span></div>`; });
     h += `</div>`;
   }
   if (nd.type === 'government_capability') {
