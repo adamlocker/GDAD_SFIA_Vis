@@ -1,24 +1,27 @@
 function lvlColor(l) {
-  return ['','#f0d2d1','#f6efa6','#d4e0c4','#8eb19d','#66b3ba','#42cafd','#1aa8d4'][+l] || '#eee';
+  return ['','#94d2bd','#e9d8a6','#ee9b00','#ca6702','#bb3e03','#ae2012','#9b2226'][+l] || '#eee';
+}
+function lvlTextColor(l) {
+  return +l <= 3 ? '#3d2700' : '#fff';
 }
 function rangeBadge(mn, mx) {
   if (mn == null) return '';
-  const pip = (v) => `<span class="lvl-pip" style="background:${lvlColor(v)}">${v}</span>`;
+  const pip = (v) => `<span class="lvl-pip" style="background:${lvlColor(v)};color:${lvlTextColor(v)}">${v}</span>`;
   if (mn === mx) return `<span class="range-badge">${pip(mn)}</span>`;
   return `<span class="range-badge">${pip(mn)}<span class="range-sep">–</span>${pip(mx)}</span>`;
 }
 
 function nodeR(type) {
-  return {root: 14, role_family: 12, role: 10, role_level: 9, government_capability: 8, sfia_skill: 8}[type] || 8;
+  return {root: 14, role_family: 12, role: 15, role_level: 12, government_capability: 13, sfia_skill: 12}[type] || 12;
 }
 function nodeColors(type) {
   return {
-    root:                  {fill: 'var(--navy)',            stroke: 'var(--navy)'},
-    role_family:           {fill: 'var(--sky-aqua)',        stroke: '#1aa8d4'},
-    role:                  {fill: 'var(--tropical-teal)',   stroke: '#4a9aa1'},
-    role_level:            {fill: 'var(--muted-teal)',      stroke: '#6d9480'},
-    government_capability: {fill: 'var(--vanilla-custard)', stroke: '#c9c050'},
-    sfia_skill:            {fill: 'var(--soft-blush)',      stroke: '#c4a4a3'},
+    root:                  {fill: '#001219', stroke: '#000a0e'},
+    role_family:           {fill: '#e9d8a6', stroke: '#c9b055'},
+    role:                  {fill: '#94d2bd', stroke: '#6ab5a0'},
+    role_level:            {fill: '#94d2bd', stroke: '#6ab5a0'},
+    government_capability: {fill: '#0a9396', stroke: '#077f82'},
+    sfia_skill:            {fill: '#005f73', stroke: '#003f4d'},
   }[type] || {fill: '#ccc', stroke: '#999'};
 }
 // Pointy-top hexagon
@@ -28,58 +31,63 @@ function hexPoints(r) {
     return `${(r * Math.cos(a)).toFixed(2)},${(r * Math.sin(a)).toFixed(2)}`;
   }).join(' ');
 }
-// Upward triangle inscribed in radius r
-function triPoints(r) {
-  const s = (r * 0.866).toFixed(2), h = (r * 0.5).toFixed(2);
-  return `0,${-r} ${s},${h} ${-s},${h}`;
-}
-// Diamond (rotated square)
-function diamPoints(r) {
-  return `0,${-r} ${r},0 0,${r} ${-r},0`;
+// Regular pentagon, flat-top, vertex pointing up
+function pentPoints(r) {
+  return Array.from({length: 5}, (_, i) => {
+    const a = (2 * Math.PI / 5) * i - Math.PI / 2;
+    return `${(r * Math.cos(a)).toFixed(2)},${(r * Math.sin(a)).toFixed(2)}`;
+  }).join(' ');
 }
 
 function pillColor(type) {
   return {
-    root:                  'rgba(26,35,50,0.10)',
-    role_family:           'rgba(66,202,253,0.22)',
-    role:                  'rgba(102,179,186,0.22)',
-    role_level:            'rgba(142,177,157,0.22)',
-    government_capability: 'rgba(246,239,166,0.60)',
-    sfia_skill:            'rgba(240,210,209,0.60)',
-  }[type] || 'rgba(244,248,248,0.9)';
+    root:                  'rgba(0,18,25,0.22)',
+    role_family:           'rgba(233,216,166,0.76)',
+    role:                  'rgba(148,210,189,0.68)',
+    role_level:            'rgba(148,210,189,0.68)',
+    government_capability: 'rgba(10,147,150,0.32)',
+    sfia_skill:            'rgba(0,95,115,0.28)',
+  }[type] || 'rgba(148,210,189,0.55)';
 }
 function pillStroke(type) {
   return {
-    root:                  'rgba(26,35,50,0.20)',
-    role_family:           'rgba(26,168,212,0.35)',
-    role:                  'rgba(74,154,161,0.35)',
-    role_level:            'rgba(109,148,128,0.35)',
-    government_capability: 'rgba(201,192,80,0.50)',
-    sfia_skill:            'rgba(196,164,163,0.50)',
-  }[type] || 'rgba(0,0,0,0.10)';
+    root:                  'rgba(0,18,25,0.55)',
+    role_family:           'rgba(201,176,85,0.72)',
+    role:                  'rgba(106,181,160,0.68)',
+    role_level:            'rgba(106,181,160,0.68)',
+    government_capability: 'rgba(7,127,130,0.58)',
+    sfia_skill:            'rgba(0,63,77,0.55)',
+  }[type] || 'rgba(0,0,0,0.15)';
 }
 function linkColor(d) {
   return {
-    root:                  'rgba(26,168,212,0.45)',
-    role_family:           'rgba(74,154,161,0.45)',
-    role:                  'rgba(109,148,128,0.40)',
-    role_level:            'rgba(180,175,60,0.45)',
-    government_capability: 'rgba(196,164,163,0.50)',
-  }[d.source.data.type] || '#b8cfd1';
+    root:                  'rgba(233,216,166,0.55)',
+    role_family:           'rgba(148,210,189,0.55)',
+    role:                  'rgba(148,210,189,0.50)',
+    role_level:            'rgba(10,147,150,0.40)',
+    government_capability: 'rgba(0,95,115,0.35)',
+  }[d.source.data.type] || '#94d2bd';
 }
 
+function sizePill(textEl, rectEl) {
+  if (!textEl || !rectEl) return;
+  try {
+    const w = textEl.getComputedTextLength();
+    if (!w) return;
+    const fs = parseFloat(window.getComputedStyle(textEl).fontSize) || 14;
+    const ph = fs + 10, pw = w + 16;
+    const tx = +textEl.getAttribute('x') || 0;
+    const anchor = textEl.getAttribute('text-anchor');
+    const px = anchor === 'end' ? tx - w - 8 : tx - 8;
+    d3.select(rectEl).attr('x', px).attr('y', -(ph / 2)).attr('width', pw).attr('height', ph);
+  } catch(e) {}
+}
 function measurePills() {
   gNode.selectAll('g.node').each(function() {
-    const textEl = d3.select(this).select('text').node();
-    const rectEl = d3.select(this).select('rect.node-pill').node();
-    if (!textEl || !rectEl) return;
-    try {
-      const b = textEl.getBBox();
-      if (!b.width) return;
-      d3.select(rectEl)
-        .attr('x', b.x - 8).attr('y', b.y - 5)
-        .attr('width', b.width + 16).attr('height', b.height + 10);
-    } catch(e) {}
+    sizePill(
+      d3.select(this).select('text').node(),
+      d3.select(this).select('rect.node-pill').node()
+    );
   });
 }
 
@@ -96,17 +104,29 @@ const zoom = d3.zoom().scaleExtent([0.04, 4])
   });
 svg.call(zoom).on('dblclick.zoom', null);
 
-const treeFn = d3.tree().nodeSize([38, 300]);
+const treeFn = d3.tree().nodeSize([48, 300]);
 
 let uid = 0;
 let root;
+let snapMode = false;
+function toggleSnap() {
+  snapMode = !snapMode;
+  document.getElementById('snap-btn').classList.toggle('snap-active', snapMode);
+}
+function snapTo(d) {
+  const r = svgEl.getBoundingClientRect();
+  svg.transition().duration(380).call(
+    zoom.transform,
+    d3.zoomIdentity.translate(r.width / 3 - d.y, r.height / 2 - d.x)
+  );
+}
 
 function initTree(data) {
   // Populate family filter
   const familySelect = document.getElementById('family-filter');
   data.children.forEach(f => {
     const o = document.createElement('option');
-    o.value = f.name; o.textContent = f.name;
+    o.value = f.name; o.textContent = toTitleCase(f.name);
     familySelect.appendChild(o);
   });
 
@@ -121,6 +141,7 @@ function initTree(data) {
     const r = svgEl.getBoundingClientRect();
     update(root);
     svg.call(zoom.transform, d3.zoomIdentity.translate(MARGIN.l, r.height / 2));
+    showDetail(root);
   });
 }
 
@@ -132,34 +153,37 @@ function update(src) {
   const node = gNode.selectAll('g.node').data(nodes, d => d._uid);
 
   const enter = node.enter().append('g')
-    .attr('class', d => `node ${d.data.type}`)
+    .attr('class', d => `node ${d.data.type}${d.data.broadly_accepted ? ' broadly-accepted' : ''}`)
     .attr('transform', () => `translate(${src.y0 ?? 0},${src.x0 ?? 0})`)
-    .on('click', (evt, d) => { toggle(d); update(d); showDetail(d); })
+    .on('click', (evt, d) => { toggle(d); update(d); showDetail(d); if (snapMode) snapTo(d); })
     .on('mouseenter', (evt, d) => dimOthers(d))
     .on('mouseleave', () => undim());
 
-  enter.append('title').text(d => d.data.name);
+  enter.append('title').text(d => tcNode(d.data.type, d.data.name));
 
   // Shape — varies by node type
   enter.each(function(d) {
-    const r = nodeR(d.data.type), c = nodeColors(d.data.type);
+    const r = nodeR(d.data.type);
+    const c = (d.data.type === 'government_capability' && d.data.broadly_accepted)
+      ? {fill: '#94d2bd', stroke: '#6ab5a0'}
+      : nodeColors(d.data.type);
     const g = d3.select(this);
     let el;
     switch (d.data.type) {
       case 'role':
         el = g.append('rect').attr('class', 'node-shape')
-          .attr('x', -r).attr('y', -r * 0.65)
-          .attr('width', r * 2).attr('height', r * 1.3)
+          .attr('x', -r).attr('y', -r)
+          .attr('width', r * 2).attr('height', r * 2)
           .attr('rx', 5).attr('ry', 5);
         break;
       case 'role_level':
         el = g.append('polygon').attr('class', 'node-shape').attr('points', hexPoints(r));
         break;
       case 'government_capability':
-        el = g.append('polygon').attr('class', 'node-shape').attr('points', triPoints(r));
+        el = g.append('polygon').attr('class', 'node-shape').attr('points', pentPoints(r));
         break;
       case 'sfia_skill':
-        el = g.append('polygon').attr('class', 'node-shape').attr('points', diamPoints(r));
+        el = g.append('polygon').attr('class', 'node-shape').attr('points', hexPoints(r));
         break;
       default:  // root, role_family
         el = g.append('circle').attr('class', 'node-shape').attr('r', r);
@@ -172,27 +196,23 @@ function update(src) {
     .attr('rx', 5).attr('ry', 5)
     .attr('x', 0).attr('y', 0).attr('width', 0).attr('height', 0)
     .style('pointer-events', 'none')
-    .style('fill', d => pillColor(d.data.type))
-    .style('stroke', d => pillStroke(d.data.type))
+    .style('fill', d => (d.data.type === 'government_capability' && d.data.broadly_accepted) ? 'rgba(148,210,189,0.78)' : pillColor(d.data.type))
+    .style('stroke', d => (d.data.type === 'government_capability' && d.data.broadly_accepted) ? 'rgba(106,181,160,0.72)' : pillStroke(d.data.type))
     .style('stroke-width', '0.8px');
 
   enter.append('text')
-    .attr('dy', '0.32em')
-    .attr('x', d => (d.children || d._children) ? -(nodeR(d.data.type) + 6) : (nodeR(d.data.type) + 6))
+    .attr('x', d => (d.children || d._children) ? -(nodeR(d.data.type) + 12) : (nodeR(d.data.type) + 12))
     .attr('text-anchor', d => (d.children || d._children) ? 'end' : 'start')
-    .text(d => trunc(d.data.name, 38));
+    .text(d => trunc(tcNode(d.data.type, d.data.name), 38));
 
-  // Size pills immediately after text content is set
-  enter.each(function() {
-    const textEl = d3.select(this).select('text').node();
-    const rectEl = d3.select(this).select('rect.node-pill').node();
-    if (!textEl || !rectEl) return;
-    try {
-      const b = textEl.getBBox();
-      if (b.width) d3.select(rectEl)
-        .attr('x', b.x - 8).attr('y', b.y - 5)
-        .attr('width', b.width + 16).attr('height', b.height + 10);
-    } catch(e) {}
+  // Size pills — deferred to next frame so text is measurable
+  requestAnimationFrame(() => {
+    enter.each(function() {
+      sizePill(
+        d3.select(this).select('text').node(),
+        d3.select(this).select('rect.node-pill').node()
+      );
+    });
   });
 
   // Level range dots on SFIA skill nodes
@@ -214,7 +234,7 @@ function update(src) {
     .attr('transform', d => `translate(${d.y},${d.x})`);
   // Node shapes are fixed on enter; no geometry update needed on merge
   merged.select('text')
-    .attr('x', d => (d.children || d._children) ? -(nodeR(d.data.type) + 6) : (nodeR(d.data.type) + 6))
+    .attr('x', d => (d.children || d._children) ? -(nodeR(d.data.type) + 12) : (nodeR(d.data.type) + 12))
     .attr('text-anchor', d => (d.children || d._children) ? 'end' : 'start');
 
   node.exit().transition().duration(250)
@@ -232,6 +252,7 @@ function update(src) {
 
   nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
   setTimeout(measurePills, 260);
+  setTimeout(measurePills, 600);
   applyFilters();
 }
 
@@ -243,10 +264,27 @@ function toggle(d) {
   else { d.children = d._children; d._children = null; }
 }
 function trunc(s, n) { return s && s.length > n ? s.slice(0, n-1) + '…' : s; }
-function shortLevel(roleName, levelName) {
+const TC_SMALL = new Set(['a','an','the','and','but','or','nor','for','in','of','on','at','to','by','with','via','as','per']);
+function toTitleCase(s) {
+  if (!s) return s;
+  s = s.replace(/\s*\(QAT\)\s*/gi, '').trim();
+  return s.split(' ').map((w, i) =>
+    (!w || (i > 0 && TC_SMALL.has(w.toLowerCase()))) ? w.toLowerCase() : w.charAt(0).toUpperCase() + w.slice(1)
+  ).join(' ');
+}
+const TC_TYPES = new Set(['role_family','role','role_level']);
+function tcNode(type, s) {
+  const v = TC_TYPES.has(type) ? toTitleCase(s) : s;
+  return v ? v.replace(/ — /g, ' | ') : v;
+}
+function shortLevel(roleName, levelName, band) {
+  const variant = (levelName.match(/ - (.+)$/) || [])[1] || null;
+  const base = levelName.replace(/ - .+$/, '');
   const esc = roleName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const short = levelName.replace(new RegExp('\\s*' + esc + '\\s*', 'i'), '').trim();
-  return short || levelName;
+  const short = base.replace(new RegExp('\\b' + esc + '\\b', 'gi'), '').trim();
+  const label = (short && short.length <= 18 && short.toLowerCase() !== base.toLowerCase())
+    ? short : (band || base);
+  return variant ? `${label} (${variant})` : label;
 }
 
 const bandSelection = {};
@@ -370,23 +408,36 @@ function showDetail(d) {
   const dc = document.getElementById('detail-content');
   dp.classList.remove('hidden');
 
-  const labels = {root:'',role_family:'Role Family',role:'Role',role_level:'Role Level',
+  const labels = {root:'Profession Framework',role_family:'Role Family',role:'Role',role_level:'Role Level',
     government_capability:'Government Capability',sfia_skill:'SFIA 9 Skill'};
-  let h = `<div class="detail-type">${labels[nd.type]||nd.type}</div><div class="detail-title">${nd.name}</div>`;
+  let h = `<div class="detail-type">${labels[nd.type]||nd.type}</div><div class="detail-title">${tcNode(nd.type, nd.name)}</div>`;
 
+  if (nd.type === 'root') {
+    const families = d.children || d._children || [];
+    h += `<div class="detail-section"><p style="font-size:14px;line-height:1.6;color:var(--text-mid)">Use this panel to navigate the framework — select a role family to explore roles, capabilities and SFIA skills.</p></div>`;
+    h += `<div class="detail-section"><h3>Role families (${families.length})</h3>`;
+    families.forEach(f => {
+      h += `<div class="nav-chip" onclick="navigateToNode('${f.data.id}')"><span style="flex:1">${toTitleCase(f.data.name)}</span><span style="color:var(--accent);font-size:15px">→</span></div>`;
+    });
+    h += `</div>`;
+  }
   if (nd.type === 'role_family') {
-    const n = (d.children||d._children||[]).length;
-    h += `<div class="detail-section"><h3>Roles</h3><p style="font-size:13px">${n} role${n!==1?'s':''}</p></div>`;
+    const roles = d.children || d._children || [];
+    h += `<div class="detail-section"><h3>Roles (${roles.length})</h3>`;
+    roles.forEach(r => {
+      h += `<div class="nav-chip" onclick="navigateToNode('${r.data.id}')"><span style="flex:1">${toTitleCase(r.data.name)}</span><span style="color:var(--accent);font-size:15px">→</span></div>`;
+    });
+    h += `</div>`;
   }
   if (nd.type === 'role') {
-    h += `<div class="detail-section"><h3>Family</h3><p style="font-size:13px">${nd.role_family}</p></div>`;
+    h += `<div class="detail-section"><h3>Family</h3><p class="detail-family">${toTitleCase(nd.role_family)}</p></div>`;
     const rls = nd.role_levels || [];
     const bandIdx = bandSelection[nd.id] ?? 0;
     const rl = rls[bandIdx] || {};
 
     h += `<div class="detail-section"><div class="band-selector">`;
     rls.forEach((level, i) => {
-      h += `<button class="band-pill${i===bandIdx?' band-pill--active':''}" onclick="selectBand('${nd.id}',${i})">${shortLevel(nd.name, level.name)}</button>`;
+      h += `<button class="band-pill${i===bandIdx?' band-pill--active':''}" onclick="selectBand('${nd.id}',${i})">${toTitleCase(shortLevel(nd.name, level.name, level.band))}</button>`;
     });
     h += `</div></div>`;
 
@@ -396,53 +447,60 @@ function showDetail(d) {
     caps.forEach(c => {
       const skills = c.children || [];
       if (skills.length > 0) {
-        h += `<div class="cap-group"><div class="cap-chip">${govLevelBadge(c.gov_level)}<span style="flex:1">${c.name}</span></div><div class="skills-rail">`;
+        h += `<div class="cap-group"><div class="cap-chip" style="cursor:pointer" onclick="navigateToSfiaFromRole('${nd.id}',${bandIdx},'${c.id}')">${govLevelBadge(c.gov_level)}<span style="flex:1">${c.name}</span><span style="color:var(--accent);font-size:15px;flex-shrink:0">→</span></div><div class="skills-rail">`;
         skills.forEach(s => {
-          h += `<div class="sfia-chip">${rangeBadge(s.min,s.max)}<button class="code nav-code" onclick="navigateToSfiaFromRole('${nd.id}',${bandIdx},'${s.id}')" title="Jump to this skill in the tree">${s.sfia_code}</button><span style="flex:1">${s.name.replace(/^[A-Z]+ — /,'')}</span></div>`;
+          h += `<div class="sfia-chip" style="cursor:pointer" onclick="navigateToSfiaFromRole('${nd.id}',${bandIdx},'${s.id}')">${rangeBadge(s.min,s.max)}<span style="flex:1">${s.name.replace(/^[A-Z]+ — /,'')}</span><span style="color:var(--accent);font-size:15px;flex-shrink:0">→</span></div>`;
         });
         h += `</div></div>`;
       } else {
-        h += `<div class="cap-group"><div class="cap-chip cap-chip--broad">${govLevelBadge(c.gov_level)}<span style="flex:1">${c.name}</span><span class="broad-tag">Broadly accepted</span></div></div>`;
+        h += `<div class="cap-group"><div class="cap-chip cap-chip--broad" style="cursor:pointer" onclick="navigateToSfiaFromRole('${nd.id}',${bandIdx},'${c.id}')">${govLevelBadge(c.gov_level)}<span style="flex:1">${c.name}</span><span style="color:var(--burnt-caramel);font-size:15px;flex-shrink:0">→</span></div></div>`;
       }
     });
     h += `</div>`;
   }
   if (nd.type === 'government_capability') {
     const sfias = d.children||d._children||[];
-    h += `<div class="detail-section"><h3>Gov. skill level</h3><p style="font-size:13px">${nd.gov_level||'—'}</p></div>`;
-    h += `<div class="detail-section"><h3>SFIA skills (${sfias.length})</h3>`;
-    sfias.forEach(s => {
-      h += `<div class="sfia-chip">${rangeBadge(s.data.min,s.data.max)}<span class="code">${s.data.sfia_code}</span><span style="flex:1">${s.data.name.replace(/^[A-Z]+ — /,'')}</span></div>`;
-    });
-    h += `</div>`;
+    if (nd.description) {
+      h += `<div class="detail-section"><p style="font-size:15px;line-height:1.6;color:var(--text)">${nd.description}</p></div>`;
+    }
+    const lvlMap = {Awareness:['Aw','awareness'],Working:['W','working'],Practitioner:['P','practitioner'],Expert:['E','expert'],Master:['M','master']};
+    const [abbr, lvlCls] = lvlMap[nd.gov_level] || [nd.gov_level?.[0]||'?', 'working'];
+    h += `<div class="detail-section"><h3>Gov. skill level</h3><div class="gov-lvl-${lvlCls}" style="display:flex;align-items:center;gap:8px;border-radius:7px;padding:7px 10px;margin-top:5px;border:1px solid rgba(0,0,0,0.15)"><span style="flex:1;font-size:15px;font-weight:600">${nd.gov_level||'—'}</span><span style="font-size:12px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(0,0,0,0.15)">${abbr}</span></div></div>`;
+    if (sfias.length) {
+      h += `<div class="detail-section"><h3>SFIA skills (${sfias.length})</h3>`;
+      sfias.forEach(s => {
+        h += `<div class="sfia-chip" style="cursor:pointer" onclick="navigateToNode('${s.data.id}')">${rangeBadge(s.data.min,s.data.max)}<span style="flex:1">${s.data.name.replace(/^[A-Z]+ — /,'')}</span><span style="color:var(--accent);font-size:15px;flex-shrink:0">→</span></div>`;
+      });
+      h += `</div>`;
+    } else {
+      h += `<div class="detail-section"><p style="font-size:14px;color:var(--text-light);font-style:italic">No SFIA skills mapped — broadly accepted behaviour.</p></div>`;
+    }
   }
   if (nd.type === 'sfia_skill') {
     const width = (nd.max != null && nd.min != null) ? nd.max - nd.min : 0;
     h += `<div class="detail-section">
       <div style="display:flex;align-items:baseline;gap:10px">
-        <p style="font-size:14px;font-weight:700;color:var(--accent)">${nd.sfia_code}</p>
-        <p style="font-size:11px;color:var(--text-light)">${nd.sfia_category}${nd.sfia_subcategory ? ' · '+nd.sfia_subcategory : ''}</p>
+        <p style="font-size:16px;font-weight:700;color:var(--accent)">${nd.sfia_code}</p>
+        <p style="font-size:13px;color:var(--text-light)">${nd.sfia_category}${nd.sfia_subcategory ? ' · '+nd.sfia_subcategory : ''}</p>
       </div>
-      ${nd.sfia_description ? `<p style="font-size:13px;line-height:1.5;margin-top:6px;color:var(--text)">${nd.sfia_description}</p>` : ''}
+      ${nd.sfia_description ? `<p style="font-size:15px;line-height:1.5;margin-top:6px;color:var(--text)">${nd.sfia_description}</p>` : ''}
     </div>`;
 
     if (nd.sfia_guidance) {
       const lines = nd.sfia_guidance.split('\n').filter(l => l.trim());
-      const intro = lines[0] && lines[0].endsWith(':') ? lines[0] : null;
-      const items = intro ? lines.slice(1) : lines;
+      const isIntro = l => l.trimEnd().endsWith(':') && l.length < 80;
+      const items = lines;
       const SHOW = 4;
       const gid = 'g' + Math.random().toString(36).slice(2);
       h += `<div class="detail-section"><h3>Guidance notes</h3>`;
-      if (intro) h += `<p style="font-size:12px;color:var(--text-mid);margin-bottom:6px">${intro}</p>`;
-      h += `<ul style="padding-left:16px;font-size:12px;line-height:1.6;color:var(--text);list-style:disc">`;
-      items.slice(0, SHOW).forEach(it => { h += `<li style="margin-bottom:3px">${it}</li>`; });
-      h += `</ul>`;
+      const introLine = it => `<p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);margin-bottom:5px;margin-top:6px">${it}</p>`;
+      const arrowItem = it => `<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:3px;font-size:14px;line-height:1.6;color:var(--text)"><span style="color:var(--text-light);flex-shrink:0;font-weight:700;margin-top:1px">›</span><span>${it}</span></div>`;
+      const renderItems = (list) => list.map(it => isIntro(it) ? introLine(it) : arrowItem(it)).join('');
+      h += `<div>${renderItems(items.slice(0, SHOW))}</div>`;
       if (items.length > SHOW) {
-        h += `<ul id="${gid}" style="padding-left:16px;font-size:12px;line-height:1.6;color:var(--text);list-style:disc;display:none">`;
-        items.slice(SHOW).forEach(it => { h += `<li style="margin-bottom:3px">${it}</li>`; });
-        h += `</ul>
+        h += `<div id="${gid}" style="display:none">${renderItems(items.slice(SHOW))}</div>
         <button id="${gid}-btn" onclick="toggleGuidance('${gid}')"
-          style="margin-top:6px;font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;font-weight:600">
+          style="margin-top:6px;font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;font-weight:600">
           Show all ${items.length} activities
         </button>`;
       }
@@ -452,7 +510,7 @@ function showDetail(d) {
     h += `<div class="detail-section"><h3>Expected SFIA level range</h3>
       <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
         ${rangeBadge(nd.min, nd.max)}
-        <span style="font-size:12px;color:var(--text-mid)">${nd.min===nd.max ? `Level ${nd.min}` : `Levels ${nd.min} to ${nd.max}`}${width>2?' — wider range due to multiple capabilities':''}</span>
+        <span style="font-size:14px;color:var(--text-mid)">${nd.min===nd.max ? `Level ${nd.min}` : `Levels ${nd.min} to ${nd.max}`}${width>2?' — wider range due to multiple capabilities':''}</span>
       </div>
     </div>`;
 
@@ -462,8 +520,8 @@ function showDetail(d) {
         const desc = nd.level_descriptions[String(lvl)];
         if (desc) {
           h += `<div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">
-            <span class="lvl-pip" style="background:${lvlColor(lvl)};flex-shrink:0;margin-top:2px">${lvl}</span>
-            <p style="font-size:12px;line-height:1.55;color:var(--text)">${desc}</p>
+            <span class="lvl-pip" style="background:${lvlColor(lvl)};color:${lvlTextColor(lvl)};flex-shrink:0;margin-top:2px">${lvl}</span>
+            <p style="font-size:14px;line-height:1.55;color:var(--text)">${desc}</p>
           </div>`;
         }
       }
@@ -471,7 +529,7 @@ function showDetail(d) {
     }
 
     h += `<div class="detail-section"><h3>Evidence (${nd.count} gov. capability${nd.count!==1?'s':''})</h3>
-      <p style="font-size:12px;color:var(--text-mid);line-height:1.5">${nd.evidence}</p>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.5">${nd.evidence}</p>
     </div>`;
   }
   dc.innerHTML = h;
