@@ -465,6 +465,16 @@
     ],
     "Brand management": [
       "BRMG"
+    ],
+    "Data architecture": [
+      "DTAN"
+    ],
+    "Security architecture": [
+      "SCTY",
+      "INAS"
+    ],
+    "User-centred content design": [
+      "INCA"
     ]
   },
   "generic_attribute": [
