@@ -391,15 +391,20 @@ function showDetail(d) {
     h += `</div></div>`;
 
     const caps = rl.children || [];
-    const sm = {};
-    caps.forEach(c => { (c.children||[]).forEach(s => { if(!sm[s.sfia_code]) sm[s.sfia_code]=s; }); });
-    const sfias = Object.values(sm).sort((a,b)=>(b.max||0)-(a.max||0));
-    h += `<div class="detail-section"><h3>SFIA skills (${sfias.length})</h3>`;
-    sfias.forEach(s => {
-      h += `<div class="sfia-chip">${rangeBadge(s.min,s.max)}<button class="code nav-code" onclick="navigateToSfiaFromRole('${nd.id}',${bandIdx},'${s.id}')" title="Jump to this skill in the tree">${s.sfia_code}</button><span style="flex:1">${s.name.replace(/^[A-Z]+ — /,'')}</span></div>`;
+    const totalSkills = [...new Set(caps.flatMap(c => (c.children||[]).map(s => s.sfia_code)))].length;
+    h += `<div class="detail-section"><h3>Capabilities &amp; skills (${caps.length} / ${totalSkills})</h3>`;
+    caps.forEach(c => {
+      const skills = c.children || [];
+      if (skills.length > 0) {
+        h += `<div class="cap-group"><div class="cap-chip">${govLevelBadge(c.gov_level)}<span style="flex:1">${c.name}</span></div><div class="skills-rail">`;
+        skills.forEach(s => {
+          h += `<div class="sfia-chip">${rangeBadge(s.min,s.max)}<button class="code nav-code" onclick="navigateToSfiaFromRole('${nd.id}',${bandIdx},'${s.id}')" title="Jump to this skill in the tree">${s.sfia_code}</button><span style="flex:1">${s.name.replace(/^[A-Z]+ — /,'')}</span></div>`;
+        });
+        h += `</div></div>`;
+      } else {
+        h += `<div class="cap-group"><div class="cap-chip cap-chip--broad">${govLevelBadge(c.gov_level)}<span style="flex:1">${c.name}</span><span class="broad-tag">Broadly accepted</span></div></div>`;
+      }
     });
-    h += `</div><div class="detail-section"><h3>Gov. capabilities (${caps.length})</h3>`;
-    caps.forEach(c => { h += `<div class="cap-chip">${govLevelBadge(c.gov_level)}<span style="flex:1">${c.name}</span></div>`; });
     h += `</div>`;
   }
   if (nd.type === 'government_capability') {
