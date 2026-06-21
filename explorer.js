@@ -243,6 +243,60 @@ function toggle(d) {
   else { d.children = d._children; d._children = null; }
 }
 function trunc(s, n) { return s && s.length > n ? s.slice(0, n-1) + '…' : s; }
+function shortLevel(roleName, levelName) {
+  const esc = roleName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const short = levelName.replace(new RegExp('\\s*' + esc + '\\s*', 'i'), '').trim();
+  return short || levelName;
+}
+
+const bandSelection = {};
+
+function selectBand(roleId, bandIndex) {
+  bandSelection[roleId] = bandIndex;
+  const roleNode = allNodes(root).find(n => n.data.id === roleId);
+  if (!roleNode) return;
+
+  const bandData = roleNode.data.role_levels[bandIndex];
+  const newChildData = bandData ? (bandData.children || []) : [];
+  const wasExpanded = !!roleNode.children;
+
+  roleNode.children = null;
+  roleNode._children = null;
+
+  if (newChildData.length > 0) {
+    const tempHier = d3.hierarchy({ children: newChildData });
+    const newNodes = tempHier.children || [];
+
+    function collapseSubtree(node) {
+      if (node.children) { node._children = node.children; node.children = null; }
+      (node._children || []).forEach(collapseSubtree);
+    }
+    newNodes.forEach(collapseSubtree);
+
+    function fixRefs(node, parent, depth) {
+      node.parent = parent;
+      node.depth = depth;
+      (node.children || node._children || []).forEach(c => fixRefs(c, node, depth + 1));
+    }
+    newNodes.forEach(c => fixRefs(c, roleNode, roleNode.depth + 1));
+
+    if (wasExpanded) {
+      roleNode.children = newNodes;
+    } else {
+      roleNode._children = newNodes;
+    }
+  }
+
+  update(roleNode);
+  showDetail(roleNode);
+}
+
+function navigateToSfiaFromRole(roleId, bandIdx, nodeId) {
+  if ((bandSelection[roleId] ?? 0) !== bandIdx) {
+    selectBand(roleId, bandIdx);
+  }
+  navigateToNode(nodeId);
+}
 function govLevelBadge(level) {
   const map = {
     'Awareness':    ['Aw', 'awareness'],
@@ -326,23 +380,26 @@ function showDetail(d) {
   }
   if (nd.type === 'role') {
     h += `<div class="detail-section"><h3>Family</h3><p style="font-size:13px">${nd.role_family}</p></div>`;
-    const lvls = d.children||d._children||[];
-    h += `<div class="detail-section"><h3>Role levels (${lvls.length})</h3>`;
-    lvls.forEach(l => { h += `<div class="cap-row"><span style="flex:1">${l.data.name}</span><span class="gov-level-tag">${l.data.band}</span></div>`; });
-    h += `</div>`;
-  }
-  if (nd.type === 'role_level') {
-    h += `<div class="detail-section"><h3>Band</h3><p style="font-size:13px">${nd.band||'—'}</p></div>`;
-    const caps = d.children||d._children||[];
+    const rls = nd.role_levels || [];
+    const bandIdx = bandSelection[nd.id] ?? 0;
+    const rl = rls[bandIdx] || {};
+
+    h += `<div class="detail-section"><div class="band-selector">`;
+    rls.forEach((level, i) => {
+      h += `<button class="band-pill${i===bandIdx?' band-pill--active':''}" onclick="selectBand('${nd.id}',${i})">${shortLevel(nd.name, level.name)}</button>`;
+    });
+    h += `</div></div>`;
+
+    const caps = rl.children || [];
     const sm = {};
-    caps.forEach(c => { (c.children||c._children||[]).forEach(s => { if(!sm[s.data.sfia_code]) sm[s.data.sfia_code]=s.data; }); });
+    caps.forEach(c => { (c.children||[]).forEach(s => { if(!sm[s.sfia_code]) sm[s.sfia_code]=s; }); });
     const sfias = Object.values(sm).sort((a,b)=>(b.max||0)-(a.max||0));
     h += `<div class="detail-section"><h3>SFIA skills (${sfias.length})</h3>`;
     sfias.forEach(s => {
-      h += `<div class="sfia-chip">${rangeBadge(s.min,s.max)}<button class="code nav-code" onclick="navigateToNode('${s.id}')" title="Jump to this skill in the tree">${s.sfia_code}</button><span style="flex:1">${s.name.replace(/^[A-Z]+ — /,'')}</span></div>`;
+      h += `<div class="sfia-chip">${rangeBadge(s.min,s.max)}<button class="code nav-code" onclick="navigateToSfiaFromRole('${nd.id}',${bandIdx},'${s.id}')" title="Jump to this skill in the tree">${s.sfia_code}</button><span style="flex:1">${s.name.replace(/^[A-Z]+ — /,'')}</span></div>`;
     });
     h += `</div><div class="detail-section"><h3>Gov. capabilities (${caps.length})</h3>`;
-    caps.forEach(c => { h += `<div class="cap-chip">${govLevelBadge(c.data.gov_level)}<span style="flex:1">${c.data.name}</span></div>`; });
+    caps.forEach(c => { h += `<div class="cap-chip">${govLevelBadge(c.gov_level)}<span style="flex:1">${c.name}</span></div>`; });
     h += `</div>`;
   }
   if (nd.type === 'government_capability') {
