@@ -136,6 +136,7 @@ function initTree(data) {
     if (d.depth >= 1) { d._children = d.children; d.children = null; }
   });
   root.x0 = 0; root.y0 = 0;
+  buildSearchIndex(root);
 
   requestAnimationFrame(() => {
     const r = svgEl.getBoundingClientRect();
@@ -567,7 +568,109 @@ function applyFilters() {
   });
 }
 
-document.getElementById('search').addEventListener('input', e => { aSearch=e.target.value; applyFilters(); });
+// ── Autocomplete ──────────────────────────────────────────────────────────────
+let searchIndex = [];
+
+function buildSearchIndex(node) {
+  searchIndex = allNodes(node)
+    .filter(d => d.data.type !== 'root')
+    .map(d => ({
+      id: d.data.id,
+      type: d.data.type,
+      display: tcNode(d.data.type, d.data.name),
+      raw: d.data.name.toLowerCase(),
+      code: (d.data.sfia_code || '').toLowerCase(),
+    }));
+}
+
+const SD_BADGE = {
+  role_family:           'background:#ee9b00;color:#3d2700',
+  role:                  'background:#0a9396;color:#fff',
+  role_level:            'background:#005f73;color:#fff',
+  government_capability: 'background:#bb3e03;color:#fff',
+  sfia_skill:            'background:#9b2226;color:#fff',
+};
+const SD_LABEL = {
+  role_family: 'Family', role: 'Role', role_level: 'Level',
+  government_capability: 'Capability', sfia_skill: 'SFIA Skill',
+};
+
+const sdEl = document.getElementById('search-dropdown');
+let sdFocusIdx = -1;
+
+function openDropdown(q) {
+  const results = searchIndex
+    .filter(e => e.raw.includes(q) || e.code.includes(q))
+    .map(e => {
+      const score = (e.raw === q || e.code === q) ? 0
+        : (e.raw.startsWith(q) || e.code.startsWith(q)) ? 1 : 2;
+      return { ...e, score };
+    })
+    .sort((a, b) => a.score - b.score || a.display.localeCompare(b.display))
+    .slice(0, 8);
+
+  sdFocusIdx = -1;
+  if (!results.length) {
+    sdEl.innerHTML = '<div class="sd-empty">No matches</div>';
+  } else {
+    sdEl.innerHTML = results.map((r, i) =>
+      `<div class="sd-item" data-id="${r.id}" data-idx="${i}">`
+      + `<span class="sd-badge" style="${SD_BADGE[r.type]||''}">${SD_LABEL[r.type]||r.type}</span>`
+      + `<span class="sd-name">${r.display}</span>`
+      + `</div>`
+    ).join('');
+    sdEl.querySelectorAll('.sd-item').forEach(el => {
+      el.addEventListener('mousedown', e => { e.preventDefault(); selectResult(el.dataset.id); });
+    });
+  }
+  sdEl.classList.add('open');
+}
+
+function closeDropdown() {
+  sdEl.classList.remove('open');
+  sdFocusIdx = -1;
+}
+
+function selectResult(id) {
+  const inp = document.getElementById('search');
+  inp.value = '';
+  aSearch = '';
+  applyFilters();
+  closeDropdown();
+  navigateToNode(id);
+}
+
+const searchInp = document.getElementById('search');
+
+searchInp.addEventListener('input', e => {
+  aSearch = e.target.value;
+  applyFilters();
+  const q = aSearch.toLowerCase().trim();
+  if (q.length >= 2) openDropdown(q); else closeDropdown();
+});
+
+searchInp.addEventListener('keydown', e => {
+  if (!sdEl.classList.contains('open')) return;
+  const items = sdEl.querySelectorAll('.sd-item');
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    sdFocusIdx = Math.min(sdFocusIdx + 1, items.length - 1);
+    items.forEach((el, i) => el.classList.toggle('sd-focus', i === sdFocusIdx));
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    sdFocusIdx = Math.max(sdFocusIdx - 1, 0);
+    items.forEach((el, i) => el.classList.toggle('sd-focus', i === sdFocusIdx));
+  } else if (e.key === 'Enter' && sdFocusIdx >= 0) {
+    e.preventDefault();
+    selectResult(items[sdFocusIdx].dataset.id);
+  } else if (e.key === 'Escape') {
+    closeDropdown();
+    searchInp.blur();
+  }
+});
+
+searchInp.addEventListener('blur', () => setTimeout(closeDropdown, 150));
+
 document.getElementById('family-filter').addEventListener('change', e => { aFamily=e.target.value; applyFilters(); });
 document.getElementById('level-filter').addEventListener('change', e => { aLevel=e.target.value; applyFilters(); });
 
