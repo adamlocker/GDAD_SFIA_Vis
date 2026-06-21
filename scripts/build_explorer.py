@@ -14,15 +14,21 @@ def build_tree():
     g = json.loads((ROOT / 'data' / 'processed' / 'role_capability_sfia_graph.json').read_text(encoding='utf-8'))
     summary = pd.read_csv(ROOT / 'data' / 'processed' / 'role_level_sfia_level_summary.csv')
 
-    # Build gov capability description lookup from raw CSV
+    # Build gov capability description lookups from raw CSV
     raw_csv = next((ROOT / 'data' / 'raw').glob('*.csv'))
     raw_df = pd.read_csv(raw_csv, encoding='utf-8-sig')
     cap_descriptions: dict[str, str] = {}
+    cap_level_descriptions: dict[tuple, str] = {}
     for _, row in raw_df.iterrows():
         name = str(row.get('Skill Name', '')).strip()
         desc = str(row.get('Skill Description', '')).strip()
         if name and desc and desc != 'nan' and name.lower() not in cap_descriptions:
             cap_descriptions[name.lower()] = desc
+        lvl  = str(row.get('Skill Level', '')).strip()
+        ldesc = str(row.get('Skill Level Description', '')).strip()
+        key = (name.lower(), lvl.lower())
+        if name and lvl and ldesc and ldesc != 'nan' and key not in cap_level_descriptions:
+            cap_level_descriptions[key] = ldesc
 
     nodes = {n['id']: n for n in g['nodes']}
     edges = g['edges']
@@ -84,6 +90,7 @@ def build_tree():
             'name': n['label'],
             'type': 'government_capability',
             'gov_level': gov_level,
+            'gov_level_description': cap_level_descriptions.get((n['label'].lower(), gov_level.lower()), ''),
             'broadly_accepted': len(sfia_children) == 0,
             'description': cap_descriptions.get(n['label'].lower(), ''),
             'children': sfia_children,
@@ -209,7 +216,24 @@ def main():
         'button { padding: 6px 13px; border-radius: 6px; border: 1px solid rgba(0,18,25,0.25); font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.35); color: #001219; transition: background .15s; }\n'
         'button:hover { background: #fef0c8; border-color: var(--golden-orange); }\n'
         'button.snap-active { background: #ee9b00; border-color: #ee9b00; color: #3d2700; }\n'
-        '#subtoolbar { background: #fff; border-bottom: 1px solid var(--border); padding: 6px 22px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }\n'
+        '#control-row { display: flex; flex-shrink: 0; border-bottom: 2px solid var(--border); }\n'
+        '#filter-column { flex: 1; display: flex; flex-direction: column; min-width: 0; }\n'
+        '.filter-row { display: flex; align-items: center; background: #f5f8fa; border-bottom: 1px solid var(--border); min-height: 34px; padding: 4px 0; }\n'
+        '.filter-row:last-child { border-bottom: none; }\n'
+        '.filter-label { width: 110px; min-width: 110px; padding-left: 22px; font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-light); white-space: nowrap; flex-shrink: 0; }\n'
+        '.filter-chips { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; flex: 1; padding: 2px 8px 2px 0; }\n'
+        '#button-column { width: 500px; min-width: 500px; flex-shrink: 0; border-left: 1px solid var(--border); background: #f5f8fa; display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 0 18px; }\n'
+        '.filter-chip { padding: 3px 11px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; cursor: pointer; background: #fff; color: var(--text-mid); transition: background .12s, border-color .12s; white-space: nowrap; }\n'
+        '.family-chip { padding: 3px 11px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; cursor: pointer; background: #fff; color: var(--text-mid); transition: background .12s, border-color .12s; white-space: nowrap; }\n'
+        '.family-chip:hover { background: #fef8e7; border-color: #ee9b00; }\n'
+        '.family-chip--active { background: #ee9b00; border-color: #ee9b00; color: #3d2700; font-weight: 700; }\n'
+        '.role-chip { padding: 3px 11px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; cursor: pointer; background: #fff; color: var(--text-mid); transition: background .12s, border-color .12s; white-space: nowrap; }\n'
+        '.role-chip:hover { background: #d4eeed; border-color: #0a9396; }\n'
+        '.role-chip--active { background: #0a9396; border-color: #0a9396; color: #fff; font-weight: 700; }\n'
+        '.band-chip { padding: 3px 11px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; cursor: pointer; background: #fff; color: var(--text-mid); transition: background .12s, border-color .12s; white-space: nowrap; }\n'
+        '.band-chip:hover { background: #cde0e5; border-color: #005f73; }\n'
+        '.band-chip--active { background: #005f73; border-color: #005f73; color: #fff; font-weight: 700; }\n'
+        '.band-chip--unavailable { opacity: 0.25; pointer-events: none; }\n'
         '#main { display: flex; flex: 1; min-height: 0; }\n'
         '#tree-panel { flex: 1; overflow: hidden; position: relative; background: var(--bg); }\n'
         '#tree-svg { display: block; width: 100%; height: 100%; }\n'
@@ -220,7 +244,7 @@ def main():
         '.detail-family { font-size: 17px; font-weight: 500; color: var(--text-mid); line-height: 1.4; }\n'
         '.detail-section { border-top: 1px solid var(--border); padding-top: 10px; padding-bottom: 6px; }\n'
         '.detail-section h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-light); margin-bottom: 7px; }\n'
-        '.sfia-chip { display: flex; align-items: center; gap: 7px; background: #fdf5d8; border: 1px solid #e9c875; border-radius: 7px; padding: 5px 10px; margin: 3px 0; font-size: 14px; color: var(--text); }\n'
+        '.sfia-chip { display: flex; align-items: center; gap: 7px; background: #f8f7f5; border: 1px solid #e4dfd8; border-radius: 7px; padding: 5px 10px; margin: 3px 0; font-size: 14px; color: var(--text); }\n'
         '.sfia-chip .code { font-weight: 700; color: var(--accent); font-size: 13px; white-space: nowrap; }\n'
         '.nav-code { background: none; border: none; padding: 0; font: inherit; cursor: pointer; }\n'
         '.nav-code:hover { text-decoration: underline; opacity: 0.75; }\n'
@@ -229,18 +253,18 @@ def main():
         '.range-sep { font-size: 13px; color: var(--text-light); font-weight: 400; }\n'
         '.cap-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 14px; border-bottom: 1px solid #f5edd8; color: var(--text); }\n'
         '.gov-level-tag { font-size: 12px; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: #fef0c8; color: #bb3e03; white-space: nowrap; flex-shrink: 0; }\n'
-        '.cap-chip { display: flex; align-items: center; gap: 7px; background: #fef0c8; border: 1px solid #ee9b00; border-radius: 7px; padding: 5px 10px; margin: 3px 0; font-size: 14px; color: var(--text); }\n'
-        '.cap-chip--broad { background: #fde8b8; border-color: #ca6702; }\n'
+        '.cap-chip { display: flex; align-items: center; gap: 7px; background: #f3f1ee; border: 1px solid #d8d2c8; border-radius: 7px; padding: 5px 10px; margin: 3px 0; font-size: 14px; color: var(--text); }\n'
+        '.cap-chip--broad { background: #eeecea; border-color: #cdc8c0; }\n'
         '.cap-group { margin-bottom: 5px; }\n'
-        '.skills-rail { margin-left: 9px; padding-left: 10px; border-left: 2px solid #ee9b00; border-radius: 0; margin-top: 3px; }\n'
-        '.nav-chip { display: flex; align-items: center; gap: 6px; padding: 6px 10px; margin: 2px 0; border-radius: 6px; font-size: 15px; cursor: pointer; color: var(--text); background: #fdf5d8; border: 1px solid #e9c875; transition: background .12s, border-color .12s; }\n'
-        '.nav-chip:hover { background: #fef0c8; border-color: #ca6702; }\n'
+        '.skills-rail { margin-left: 9px; padding-left: 10px; border-left: 2px solid #d8d2c8; border-radius: 0; margin-top: 3px; }\n'
+        '.nav-chip { display: flex; align-items: center; gap: 6px; padding: 6px 10px; margin: 2px 0; border-radius: 6px; font-size: 15px; cursor: pointer; color: var(--text); background: #f3f1ee; border: 1px solid #d8d2c8; transition: background .12s, border-color .12s; }\n'
+        '.nav-chip:hover { background: #eeecea; border-color: #c8c0b4; }\n'
         '.gov-level-pip { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 20px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: .02em; flex-shrink: 0; padding: 0 4px; }\n'
-        '.gov-lvl-awareness    { background: #e9d8a6; color: #5a3e00; }\n'
-        '.gov-lvl-working      { background: #ee9b00; color: #3d2700; }\n'
-        '.gov-lvl-practitioner { background: #ca6702; color: #fff; }\n'
-        '.gov-lvl-expert       { background: #bb3e03; color: #fff; }\n'
-        '.gov-lvl-master       { background: #9b2226; color: #fff; }\n'
+        '.gov-lvl-awareness    { background: #e2efe8; color: #1e4030; }\n'
+        '.gov-lvl-working      { background: #8ec0a0; color: #fff; }\n'
+        '.gov-lvl-practitioner { background: #3a8455; color: #fff; }\n'
+        '.gov-lvl-expert       { background: #0a4025; color: #fff; }\n'
+        '.gov-lvl-master       { background: #062918; color: #fff; }\n'
         '#close-detail { align-self: flex-end; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-light); padding: 0; line-height: 1; }\n'
         '#close-detail:hover { color: var(--text); }\n'
         '.node .node-shape { cursor: pointer; stroke-width: 2px; transition: filter .15s; }\n'
@@ -251,7 +275,7 @@ def main():
         '.node.role > text { font-weight: 600; fill: var(--text); }\n'
         '.node.role_level > text { fill: var(--text); }\n'
         '.node.government_capability > text { font-size: 15px; fill: var(--text-mid); }\n'
-        '.node.broadly-accepted > text { font-weight: 600; fill: #5a3e00; }\n'
+        '.node.broadly-accepted > text { font-weight: 600; fill: #144828; }\n'
         '.node.sfia_skill > text { font-size: 15px; fill: var(--text-mid); }\n'
         '.link { fill: none; stroke-width: 2px; }\n'
         '.node.highlight > .node-shape { stroke: #ee9b00 !important; stroke-width: 3px !important; filter: drop-shadow(0 0 5px rgba(238,155,0,0.7)); }\n'
@@ -263,18 +287,12 @@ def main():
         '#legend { position: absolute; bottom: 14px; left: 14px; background: rgba(255,255,255,.95); border: 1px solid var(--border); border-radius: 9px; padding: 11px 14px; font-size: 13px; line-height: 1.7; pointer-events: none; color: var(--text-mid); box-shadow: 0 2px 8px rgba(0,0,0,.06); }\n'
         '.legend-row { display: flex; align-items: center; gap: 8px; }\n'
         '.lc { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }\n'
-        '.lc-root { background: #001219; }\n'
-        '.lc-family { background: var(--vanilla-custard); border: 1px solid #c9b055; }\n'
-        '.lc-role { background: #94d2bd; border: 1px solid #6ab5a0; }\n'
-        '.lc-cap { background: #0a9396; }\n'
-        '.lc-sfia { background: #005f73; }\n'
+        '.lc-root { background: #3d3530; }\n'
+        '.lc-family { background: #c8c0b4; border: 1px solid #b0a898; }\n'
+        '.lc-role { background: #bad8c4; border: 1px solid #96c4a8; }\n'
+        '.lc-cap { background: #60a478; }\n'
+        '.lc-sfia { background: #1e6038; }\n'
         '.band-selector { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px 0 4px; }\n'
-        '#family-chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }\n'
-        '.family-chip, .role-chip { padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); font-size: 13px; font-weight: 500; cursor: pointer; background: #fff; color: var(--text); transition: background .12s, border-color .12s; white-space: nowrap; }\n'
-        '.family-chip:hover, .role-chip:hover { background: #fef0c8; border-color: var(--golden-orange); }\n'
-        '.family-chip--active { background: #ee9b00; border-color: #ee9b00; color: #3d2700; font-weight: 700; }\n'
-        '#role-chips { display: none; gap: 6px; flex-wrap: wrap; align-items: center; padding-left: 12px; margin-left: 4px; border-left: 2px solid var(--border); }\n'
-        '.role-chip--active { background: #0a9396; border-color: #0a9396; color: #fff; font-weight: 700; }\n'
         '.band-pill { background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 4px 11px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-mid); transition: background .12s, border-color .12s; }\n'
         '.band-pill:hover { background: #fef0c8; border-color: #ee9b00; color: var(--text); }\n'
         '.band-pill--active { background: #ee9b00; border-color: #ee9b00; color: #3d2700; }\n'
@@ -292,13 +310,26 @@ def main():
         '    <div id="search-dropdown"></div>\n'
         '  </div>\n'
         '</div>\n'
-        '<div id="subtoolbar">\n'
-        '  <div id="family-chips"></div>\n'
-        '  <div id="role-chips"></div>\n'
-        '  <div style="flex:1"></div>\n'
-        '  <button onclick="expandAll()">Expand all</button>\n'
-        '  <button onclick="collapseAll()">Collapse to families</button>\n'
-        '  <button id="snap-btn" onclick="toggleSnap()">Snap</button>\n'
+        '<div id="control-row">\n'
+        '  <div id="filter-column">\n'
+        '    <div class="filter-row">\n'
+        '      <span class="filter-label">Role family</span>\n'
+        '      <div class="filter-chips" id="family-chips"></div>\n'
+        '    </div>\n'
+        '    <div class="filter-row">\n'
+        '      <span class="filter-label">Role</span>\n'
+        '      <div class="filter-chips" id="role-chips"></div>\n'
+        '    </div>\n'
+        '    <div class="filter-row">\n'
+        '      <span class="filter-label">Role level</span>\n'
+        '      <div class="filter-chips" id="band-chips"></div>\n'
+        '    </div>\n'
+        '  </div>\n'
+        '  <div id="button-column">\n'
+        '    <button onclick="expandAll()">Expand all</button>\n'
+        '    <button onclick="collapseAll()">Collapse to families</button>\n'
+        '    <button id="snap-btn" onclick="toggleSnap()">Snap</button>\n'
+        '  </div>\n'
         '</div>\n'
         '<div id="main">\n'
         '  <div id="tree-panel">\n'

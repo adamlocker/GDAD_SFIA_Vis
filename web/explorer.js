@@ -1,9 +1,12 @@
 function lvlColor(l) {
-  return ['','#94d2bd','#e9d8a6','#ee9b00','#ca6702','#bb3e03','#ae2012','#9b2226'][+l] || '#eee';
+  return ['','#e2efe8','#bad8c4','#8ec0a0','#60a478','#3a8455','#1e6038','#0a4025'][+l] || '#eee';
 }
 function lvlTextColor(l) {
-  return +l <= 3 ? '#3d2700' : '#fff';
+  return +l <= 2 ? '#1e4030' : '#fff';
 }
+const GOV_LVL_COLOR = {Awareness:'#e2efe8', Working:'#8ec0a0', Practitioner:'#3a8455', Expert:'#0a4025'};
+const GOV_LVL_TEXT  = {Awareness:'#1e4030', Working:'#fff',    Practitioner:'#fff',    Expert:'#fff'};
+const GOV_LVL_ABBR  = {Awareness:'A', Working:'W', Practitioner:'P', Expert:'E'};
 function rangeBadge(mn, mx) {
   if (mn == null) return '';
   const pip = (v) => `<span class="lvl-pip" style="background:${lvlColor(v)};color:${lvlTextColor(v)}">${v}</span>`;
@@ -16,12 +19,12 @@ function nodeR(type) {
 }
 function nodeColors(type) {
   return {
-    root:                  {fill: '#001219', stroke: '#000a0e'},
-    role_family:           {fill: '#e9d8a6', stroke: '#c9b055'},
-    role:                  {fill: '#94d2bd', stroke: '#6ab5a0'},
-    role_level:            {fill: '#94d2bd', stroke: '#6ab5a0'},
-    government_capability: {fill: '#0a9396', stroke: '#077f82'},
-    sfia_skill:            {fill: '#005f73', stroke: '#003f4d'},
+    root:                  {fill: '#3d3530', stroke: '#2a2420'},
+    role_family:           {fill: '#c8c0b4', stroke: '#b0a898'},
+    role:                  {fill: '#bad8c4', stroke: '#96c4a8'},
+    role_level:            {fill: '#bad8c4', stroke: '#96c4a8'},
+    government_capability: {fill: '#60a478', stroke: '#4a8860'},
+    sfia_skill:            {fill: '#1e6038', stroke: '#144828'},
   }[type] || {fill: '#ccc', stroke: '#999'};
 }
 // Pointy-top hexagon
@@ -41,32 +44,32 @@ function pentPoints(r) {
 
 function pillColor(type) {
   return {
-    root:                  'rgba(0,18,25,0.22)',
-    role_family:           'rgba(233,216,166,0.76)',
-    role:                  'rgba(148,210,189,0.68)',
-    role_level:            'rgba(148,210,189,0.68)',
-    government_capability: 'rgba(10,147,150,0.32)',
-    sfia_skill:            'rgba(0,95,115,0.28)',
-  }[type] || 'rgba(148,210,189,0.55)';
+    root:                  'rgba(61,53,48,0.22)',
+    role_family:           'rgba(232,228,222,0.88)',
+    role:                  'rgba(186,216,196,0.72)',
+    role_level:            'rgba(186,216,196,0.72)',
+    government_capability: 'rgba(96,164,120,0.28)',
+    sfia_skill:            'rgba(30,96,56,0.22)',
+  }[type] || 'rgba(186,216,196,0.55)';
 }
 function pillStroke(type) {
   return {
-    root:                  'rgba(0,18,25,0.55)',
-    role_family:           'rgba(201,176,85,0.72)',
-    role:                  'rgba(106,181,160,0.68)',
-    role_level:            'rgba(106,181,160,0.68)',
-    government_capability: 'rgba(7,127,130,0.58)',
-    sfia_skill:            'rgba(0,63,77,0.55)',
+    root:                  'rgba(61,53,48,0.55)',
+    role_family:           'rgba(176,168,152,0.75)',
+    role:                  'rgba(150,196,168,0.72)',
+    role_level:            'rgba(150,196,168,0.72)',
+    government_capability: 'rgba(74,136,96,0.55)',
+    sfia_skill:            'rgba(20,72,40,0.50)',
   }[type] || 'rgba(0,0,0,0.15)';
 }
 function linkColor(d) {
   return {
-    root:                  'rgba(233,216,166,0.55)',
-    role_family:           'rgba(148,210,189,0.55)',
-    role:                  'rgba(148,210,189,0.50)',
-    role_level:            'rgba(10,147,150,0.40)',
-    government_capability: 'rgba(0,95,115,0.35)',
-  }[d.source.data.type] || '#94d2bd';
+    root:                  'rgba(200,192,180,0.55)',
+    role_family:           'rgba(186,216,196,0.55)',
+    role:                  'rgba(142,192,160,0.50)',
+    role_level:            'rgba(96,164,120,0.42)',
+    government_capability: 'rgba(30,96,56,0.35)',
+  }[d.source.data.type] || 'rgba(186,216,196,0.50)';
 }
 
 function sizePill(textEl, rectEl) {
@@ -104,7 +107,7 @@ const zoom = d3.zoom().scaleExtent([0.04, 4])
   });
 svg.call(zoom).on('dblclick.zoom', null);
 
-const treeFn = d3.tree().nodeSize([56, 420]);
+const treeFn = d3.tree().nodeSize([72, 420]);
 
 let uid = 0;
 let root;
@@ -135,7 +138,8 @@ function initTree(data) {
         toggleFamilyNode(f.name, false);
       } else {
         aFamily.add(f.name);
-        toggleFamilyNode(f.name, true);
+        const famNode = allNodes(root).find(d => d.data.type === 'role_family' && d.data.name === f.name);
+        if (famNode) navigateToNode(famNode.data.id);
       }
       btn.classList.toggle('family-chip--active', aFamily.has(f.name));
       updateRoleChips();
@@ -151,6 +155,7 @@ function initTree(data) {
   });
   root.x0 = 0; root.y0 = 0;
   buildSearchIndex(root);
+  buildBandChips();
 
   requestAnimationFrame(() => {
     const r = svgEl.getBoundingClientRect();
@@ -211,14 +216,14 @@ function update(src) {
     .attr('rx', 5).attr('ry', 5)
     .attr('x', 0).attr('y', 0).attr('width', 0).attr('height', 0)
     .style('pointer-events', 'none')
-    .style('fill', d => (d.data.type === 'government_capability' && d.data.broadly_accepted) ? 'rgba(148,210,189,0.78)' : pillColor(d.data.type))
-    .style('stroke', d => (d.data.type === 'government_capability' && d.data.broadly_accepted) ? 'rgba(106,181,160,0.72)' : pillStroke(d.data.type))
+    .style('fill', d => (d.data.type === 'government_capability' && d.data.broadly_accepted) ? 'rgba(142,192,160,0.40)' : pillColor(d.data.type))
+    .style('stroke', d => (d.data.type === 'government_capability' && d.data.broadly_accepted) ? 'rgba(74,136,96,0.55)' : pillStroke(d.data.type))
     .style('stroke-width', '0.8px');
 
   enter.append('text')
     .attr('x', d => (d.children || d._children) ? -(nodeR(d.data.type) + 12) : (nodeR(d.data.type) + 12))
     .attr('text-anchor', d => (d.children || d._children) ? 'end' : 'start')
-    .text(d => trunc(tcNode(d.data.type, d.data.name), 38));
+    .text(d => tcNode(d.data.type, d.data.name));
 
   // Size pills — deferred to next frame so text is measurable
   requestAnimationFrame(() => {
@@ -243,6 +248,21 @@ function update(src) {
     .attr('r', 7).attr('cx', -14).attr('cy', 0)
     .style('fill', d => lvlColor(d.data.max))
     .attr('stroke', '#fff').attr('stroke-width', 2);
+
+  // Gov capability level pips — small labelled circle above the pentagon
+  const capEnter = enter.filter(d => d.data.type === 'government_capability' && d.data.gov_level);
+  const capPip = capEnter.append('g').attr('class', 'cap-pip').attr('pointer-events', 'none');
+  capPip.append('rect')
+    .attr('width', 18).attr('height', 18).attr('rx', 3)
+    .attr('x', -9).attr('y', -37)
+    .style('fill', d => GOV_LVL_COLOR[d.data.gov_level] || '#ccc')
+    .attr('stroke', '#fff').attr('stroke-width', 1.5);
+  capPip.append('text')
+    .attr('x', 0).attr('y', -28)
+    .attr('text-anchor', 'middle').attr('dominant-baseline', 'central')
+    .style('font-size', '9px').style('font-weight', '800').style('pointer-events', 'none')
+    .style('fill', d => GOV_LVL_TEXT[d.data.gov_level] || '#000')
+    .text(d => GOV_LVL_ABBR[d.data.gov_level] || '?');
 
   const merged = enter.merge(node);
   merged.transition().duration(250)
@@ -480,7 +500,17 @@ function showDetail(d) {
     }
     const lvlMap = {Awareness:['Aw','awareness'],Working:['W','working'],Practitioner:['P','practitioner'],Expert:['E','expert'],Master:['M','master']};
     const [abbr, lvlCls] = lvlMap[nd.gov_level] || [nd.gov_level?.[0]||'?', 'working'];
-    h += `<div class="detail-section"><h3>Gov. skill level</h3><div class="gov-lvl-${lvlCls}" style="display:flex;align-items:center;gap:8px;border-radius:7px;padding:7px 10px;margin-top:5px;border:1px solid rgba(0,0,0,0.15)"><span style="flex:1;font-size:15px;font-weight:600">${nd.gov_level||'—'}</span><span style="font-size:12px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(0,0,0,0.15)">${abbr}</span></div></div>`;
+    const govLvlDesc = nd.gov_level_description || '';
+    const isIntroLine = l => l.trimEnd().endsWith(':') && l.length < 80;
+    const govLvlHtml = govLvlDesc
+      ? govLvlDesc.split('\n').filter(l => l.trim()).map(l => {
+          const clean = l.replace(/^[\s\-–•]+/, '').trim();
+          return isIntroLine(clean)
+            ? `<p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);margin-bottom:5px;margin-top:6px">${clean}</p>`
+            : `<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:3px;font-size:14px;line-height:1.6;color:var(--text)"><span style="color:var(--text-light);flex-shrink:0;font-weight:700;margin-top:1px">›</span><span>${clean}</span></div>`;
+        }).join('')
+      : '';
+    h += `<div class="detail-section"><h3>Government skill level</h3><div class="gov-lvl-${lvlCls}" style="display:flex;align-items:center;gap:8px;border-radius:7px;padding:7px 10px;margin-top:5px;border:1px solid rgba(0,0,0,0.15)"><span style="flex:1;font-size:15px;font-weight:600">${nd.gov_level||'—'}</span><span style="font-size:12px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(0,0,0,0.15)">${abbr}</span></div>${govLvlHtml ? `<div style="margin-top:8px">${govLvlHtml}</div>` : ''}</div>`;
     if (sfias.length) {
       h += `<div class="detail-section"><h3>SFIA skills (${sfias.length})</h3>`;
       sfias.forEach(s => {
@@ -543,7 +573,7 @@ function showDetail(d) {
       h += `</div>`;
     }
 
-    h += `<div class="detail-section"><h3>Evidence (${nd.count} gov. capability${nd.count!==1?'s':''})</h3>
+    h += `<div class="detail-section"><h3>Evidence (${nd.count} government capability${nd.count!==1?'s':''})</h3>
       <p style="font-size:14px;color:var(--text-mid);line-height:1.5">${nd.evidence}</p>
     </div>`;
   }
@@ -561,7 +591,9 @@ function toggleGuidance(gid) {
 function closeDetail() { document.getElementById('detail-panel').classList.add('hidden'); }
 
 // ── Filters ───────────────────────────────────────────────────────────────────
-let aSearch='', aFamily=new Set(), aRole=new Set();
+let aSearch='', aFamily=new Set(), aRole=new Set(), aBand=null;
+
+const BAND_ORDER = ['Apprentice','Junior','Associate','Practitioner','Practitioner/Manager','Senior','Principal','Lead','Head/Chief'];
 
 function nodeFamily(d) {
   let cur = d;
@@ -581,6 +613,61 @@ function nodeRoleId(d) {
   return null;
 }
 
+function buildBandChips() {
+  const container = document.getElementById('band-chips');
+  if (!container) return;
+  container.innerHTML = '';
+  const bands = [...new Set(
+    allNodes(root)
+      .filter(d => d.data.type === 'role')
+      .flatMap(d => (d.data.role_levels || []).map(rl => rl.band).filter(Boolean))
+  )].sort((a, b) => (BAND_ORDER.indexOf(a) - BAND_ORDER.indexOf(b)));
+
+  bands.forEach(band => {
+    const btn = document.createElement('button');
+    btn.className = 'band-chip';
+    btn.textContent = band;
+    btn.addEventListener('click', () => {
+      aBand = (aBand === band) ? null : band;
+      container.querySelectorAll('.band-chip').forEach(b => b.classList.toggle('band-chip--active', b.textContent === aBand));
+      applyGlobalBand();
+      applyFilters();
+    });
+    container.appendChild(btn);
+  });
+}
+
+function updateBandChipAvailability() {
+  const container = document.getElementById('band-chips');
+  if (!container) return;
+  let availableBands;
+  if (aRole.size === 0) {
+    availableBands = null; // all available
+  } else {
+    availableBands = new Set(
+      allNodes(root)
+        .filter(d => d.data.type === 'role' && aRole.has(d.data.id))
+        .flatMap(d => (d.data.role_levels || []).map(rl => rl.band).filter(Boolean))
+    );
+  }
+  container.querySelectorAll('.band-chip').forEach(btn => {
+    const unavailable = availableBands !== null && !availableBands.has(btn.textContent);
+    btn.classList.toggle('band-chip--unavailable', unavailable);
+  });
+}
+
+function applyGlobalBand() {
+  allNodes(root).filter(d => d.data.type === 'role').forEach(roleNode => {
+    const rls = roleNode.data.role_levels || [];
+    if (aBand === null) {
+      selectBand(roleNode.data.id, bandSelection[roleNode.data.id] ?? 0);
+      return;
+    }
+    const idx = rls.findIndex(rl => rl.band === aBand);
+    if (idx >= 0) selectBand(roleNode.data.id, idx);
+  });
+}
+
 function toggleFamilyNode(name, expand) {
   const n = allNodes(root).find(d => d.data.type === 'role_family' && d.data.name === name);
   if (!n) return;
@@ -595,7 +682,6 @@ function updateRoleChips() {
   aRole.clear();
 
   if (aFamily.size === 0) {
-    container.style.display = 'none';
     return;
   }
 
@@ -613,14 +699,15 @@ function updateRoleChips() {
     btn.dataset.roleId = r.data.id;
     btn.textContent = tcNode('role', r.data.name);
     btn.addEventListener('click', () => {
-      if (aRole.has(r.data.id)) aRole.delete(r.data.id); else aRole.add(r.data.id);
-      btn.classList.toggle('role-chip--active', aRole.has(r.data.id));
+      const wasActive = aRole.has(r.data.id);
+      if (wasActive) { aRole.delete(r.data.id); } else { aRole.add(r.data.id); navigateToNode(r.data.id); }
+      btn.classList.toggle('role-chip--active', !wasActive);
+      updateBandChipAvailability();
       applyFilters();
     });
     container.appendChild(btn);
   });
 
-  container.style.display = 'flex';
 }
 
 function applyFilters() {
@@ -635,7 +722,20 @@ function applyFilters() {
     const rid = nodeRoleId(d);
     const dimmedByRole = !dimmedByFamily && aRole.size > 0 && rid !== null && !aRole.has(rid);
 
-    const dimmed = dimmedByFamily || dimmedByRole;
+    let dimmedByBand = false;
+    if (!dimmedByFamily && !dimmedByRole && aBand !== null) {
+      let cur = d;
+      while (cur) {
+        if (cur.data.type === 'role') {
+          const hasBand = (cur.data.role_levels || []).some(rl => rl.band === aBand);
+          if (!hasBand) dimmedByBand = true;
+          break;
+        }
+        cur = cur.parent;
+      }
+    }
+
+    const dimmed = dimmedByFamily || dimmedByRole || dimmedByBand;
 
     let highlighted = false;
     if (!dimmed && q) {
