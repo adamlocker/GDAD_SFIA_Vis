@@ -98,12 +98,14 @@ def build_tree():
     def role_node(role_id: str) -> dict:
         n = nodes[role_id]
         rl_ids = list(dict.fromkeys(t for t in children_of.get(role_id, []) if nodes.get(t, {}).get('type') == 'role_level'))
+        role_levels = [role_level_node(rl) for rl in rl_ids]
         return {
             'id': role_id,
             'name': n['label'],
             'type': 'role',
             'role_family': n.get('role_family', ''),
-            'children': [role_level_node(rl) for rl in rl_ids],
+            'role_levels': role_levels,
+            'children': role_levels[0]['children'] if role_levels else [],
         }
 
     families = [n for n in g['nodes'] if n['type'] == 'role_family']
@@ -216,9 +218,12 @@ def main():
         '.lc-root { background: var(--navy); }\n'
         '.lc-family { background: var(--sky-aqua); border: 1px solid #1aa8d4; }\n'
         '.lc-role { background: var(--tropical-teal); border: 1px solid #4a9aa1; }\n'
-        '.lc-level { background: var(--muted-teal); border: 1px solid #6d9480; }\n'
         '.lc-cap { background: var(--vanilla-custard); border: 1px solid #c9c050; }\n'
         '.lc-sfia { background: var(--soft-blush); border: 1px solid #c4a4a3; }\n'
+        '.band-selector { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px 0 4px; }\n'
+        '.band-pill { background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 4px 11px; font-size: 11px; font-weight: 600; cursor: pointer; color: var(--text-mid); transition: background .12s, border-color .12s; }\n'
+        '.band-pill:hover { background: #ddf0f3; border-color: var(--tropical-teal); color: var(--text); }\n'
+        '.band-pill--active { background: var(--tropical-teal); border-color: var(--tropical-teal); color: #fff; }\n'
         '</style>\n'
         '</head>\n'
         '<body>\n'
@@ -243,7 +248,6 @@ def main():
         '      <div class="legend-row"><div class="lc lc-root"></div>Root</div>\n'
         '      <div class="legend-row"><div class="lc lc-family"></div>Role family</div>\n'
         '      <div class="legend-row"><div class="lc lc-role"></div>Role</div>\n'
-        '      <div class="legend-row"><div class="lc lc-level"></div>Role level</div>\n'
         '      <div class="legend-row"><div class="lc lc-cap"></div>Gov. capability</div>\n'
         '      <div class="legend-row"><div class="lc lc-sfia"></div>SFIA skill</div>\n'
         '    </div>\n'
