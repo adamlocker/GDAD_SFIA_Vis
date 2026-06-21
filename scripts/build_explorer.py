@@ -354,7 +354,7 @@ def main():
         '</html>\n'
     )
 
-    out = ROOT / 'web' / 'collapsible_role_capability_skill_level_tree.html'
+    out = ROOT / 'web' / 'index.html'
     out.write_text(html, encoding='utf-8')
     print(f'Written: {out}')
 

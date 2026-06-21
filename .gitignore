@@ -8,3 +8,4 @@ __pycache__/
 !/data/processed/README.md
 !/data/outputs/README.md
 !/web/README.md
+!/web/index.html
