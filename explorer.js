@@ -91,7 +91,7 @@ function measurePills() {
   });
 }
 
-const MARGIN = {t: 40, r: 300, b: 40, l: 320};
+const MARGIN = {t: 40, r: 420, b: 40, l: 400};
 const svgEl = document.getElementById('tree-svg');
 const svg = d3.select(svgEl);
 const gLink = svg.append('g').attr('class', 'links');
@@ -104,7 +104,7 @@ const zoom = d3.zoom().scaleExtent([0.04, 4])
   });
 svg.call(zoom).on('dblclick.zoom', null);
 
-const treeFn = d3.tree().nodeSize([48, 300]);
+const treeFn = d3.tree().nodeSize([56, 420]);
 
 let uid = 0;
 let root;
@@ -122,12 +122,26 @@ function snapTo(d) {
 }
 
 function initTree(data) {
-  // Populate family filter
-  const familySelect = document.getElementById('family-filter');
+  // Build family chips
+  const chipsEl = document.getElementById('family-chips');
   data.children.forEach(f => {
-    const o = document.createElement('option');
-    o.value = f.name; o.textContent = toTitleCase(f.name);
-    familySelect.appendChild(o);
+    const btn = document.createElement('button');
+    btn.className = 'family-chip';
+    btn.dataset.family = f.name;
+    btn.textContent = toTitleCase(f.name);
+    btn.addEventListener('click', () => {
+      if (aFamily.has(f.name)) {
+        aFamily.delete(f.name);
+        toggleFamilyNode(f.name, false);
+      } else {
+        aFamily.add(f.name);
+        toggleFamilyNode(f.name, true);
+      }
+      btn.classList.toggle('family-chip--active', aFamily.has(f.name));
+      updateRoleChips();
+      applyFilters();
+    });
+    chipsEl.appendChild(btn);
   });
 
   root = d3.hierarchy(data);
@@ -547,24 +561,90 @@ function toggleGuidance(gid) {
 function closeDetail() { document.getElementById('detail-panel').classList.add('hidden'); }
 
 // ── Filters ───────────────────────────────────────────────────────────────────
-let aSearch='', aFamily='', aLevel='';
+let aSearch='', aFamily=new Set(), aRole=new Set();
+
+function nodeFamily(d) {
+  let cur = d;
+  while (cur) {
+    if (cur.data.type === 'role_family') return cur.data.name;
+    cur = cur.parent;
+  }
+  return null;
+}
+
+function nodeRoleId(d) {
+  let cur = d;
+  while (cur) {
+    if (cur.data.type === 'role') return cur.data.id;
+    cur = cur.parent;
+  }
+  return null;
+}
+
+function toggleFamilyNode(name, expand) {
+  const n = allNodes(root).find(d => d.data.type === 'role_family' && d.data.name === name);
+  if (!n) return;
+  if (expand && n._children) { n.children = n._children; n._children = null; }
+  if (!expand && n.children) { n._children = n.children; n.children = null; }
+  update(n);
+}
+
+function updateRoleChips() {
+  const container = document.getElementById('role-chips');
+  container.innerHTML = '';
+  aRole.clear();
+
+  if (aFamily.size === 0) {
+    container.style.display = 'none';
+    return;
+  }
+
+  const roles = [];
+  allNodes(root)
+    .filter(d => d.data.type === 'role_family' && aFamily.has(d.data.name))
+    .forEach(fn => {
+      const ch = fn.children || fn._children || [];
+      ch.filter(c => c.data.type === 'role').forEach(r => roles.push(r));
+    });
+
+  roles.sort((a, b) => a.data.name.localeCompare(b.data.name)).forEach(r => {
+    const btn = document.createElement('button');
+    btn.className = 'role-chip';
+    btn.dataset.roleId = r.data.id;
+    btn.textContent = tcNode('role', r.data.name);
+    btn.addEventListener('click', () => {
+      if (aRole.has(r.data.id)) aRole.delete(r.data.id); else aRole.add(r.data.id);
+      btn.classList.toggle('role-chip--active', aRole.has(r.data.id));
+      applyFilters();
+    });
+    container.appendChild(btn);
+  });
+
+  container.style.display = 'flex';
+}
 
 function applyFilters() {
   const q = aSearch.toLowerCase().trim();
-  const lvl = aLevel ? +aLevel : null;
-  const hasFilter = q || lvl || aFamily;
+
   gNode.selectAll('g.node').each(function(d) {
     const nd = d.data;
-    let match = false;
-    if (hasFilter) {
-      const txt = (nd.name+' '+(nd.sfia_code||'')).toLowerCase();
-      const qm = !q || txt.includes(q);
-      const lm = !lvl || (nd.min != null && nd.max != null && lvl >= nd.min && lvl <= nd.max);
-      const fm = !aFamily || (nd.type==='role_family' ? nd.name===aFamily : true);
-      match = qm && lm && fm &&
-        ['sfia_skill','government_capability','role_level','role','role_family'].includes(nd.type);
+
+    const fam = nodeFamily(d);
+    const dimmedByFamily = aFamily.size > 0 && fam !== null && !aFamily.has(fam);
+
+    const rid = nodeRoleId(d);
+    const dimmedByRole = !dimmedByFamily && aRole.size > 0 && rid !== null && !aRole.has(rid);
+
+    const dimmed = dimmedByFamily || dimmedByRole;
+
+    let highlighted = false;
+    if (!dimmed && q) {
+      const txt = (nd.name + ' ' + (nd.sfia_code || '')).toLowerCase();
+      const typeMatch = ['sfia_skill','government_capability','role_level','role','role_family'].includes(nd.type);
+      highlighted = txt.includes(q) && typeMatch;
     }
-    d3.select(this).classed('highlight', hasFilter && match).classed('dimmed', false);
+
+    d3.select(this).classed('highlight', highlighted).classed('dimmed', dimmed);
   });
 }
 
@@ -671,8 +751,6 @@ searchInp.addEventListener('keydown', e => {
 
 searchInp.addEventListener('blur', () => setTimeout(closeDropdown, 150));
 
-document.getElementById('family-filter').addEventListener('change', e => { aFamily=e.target.value; applyFilters(); });
-document.getElementById('level-filter').addEventListener('change', e => { aLevel=e.target.value; applyFilters(); });
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
 fetch('explorer_data.json')
