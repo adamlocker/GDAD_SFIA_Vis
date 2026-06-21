@@ -185,7 +185,7 @@ function update(src) {
   enter.each(function(d) {
     const r = nodeR(d.data.type);
     const c = (d.data.type === 'government_capability' && d.data.broadly_accepted)
-      ? {fill: '#94d2bd', stroke: '#6ab5a0'}
+      ? {fill: '#8ec0a0', stroke: '#60a478'}
       : nodeColors(d.data.type);
     const g = d3.select(this);
     let el;
@@ -324,7 +324,28 @@ function shortLevel(roleName, levelName, band) {
 
 const bandSelection = {};
 
-function selectBand(roleId, bandIndex) {
+function findRoleAncestor(d) {
+  let n = d.parent;
+  while (n) { if (n.data.type === 'role') return n; n = n.parent; }
+  return null;
+}
+
+function selectBandKeepNode(roleId, bandIndex, nodeIdSuffix) {
+  selectBand(roleId, bandIndex, true);
+  const equiv = allNodes(root).find(n => {
+    if (!n.data.id || n.data.id === roleId) return false;
+    const parts = n.data.id.split('|');
+    return parts.length > 1 && parts.slice(1).join('|') === nodeIdSuffix;
+  });
+  if (equiv) {
+    navigateToNode(equiv.data.id);
+  } else {
+    const roleNode = allNodes(root).find(n => n.data.id === roleId);
+    if (roleNode) showDetail(roleNode);
+  }
+}
+
+function selectBand(roleId, bandIndex, skipDetail) {
   bandSelection[roleId] = bandIndex;
   const roleNode = allNodes(root).find(n => n.data.id === roleId);
   if (!roleNode) return;
@@ -361,7 +382,7 @@ function selectBand(roleId, bandIndex) {
   }
 
   update(roleNode);
-  showDetail(roleNode);
+  if (!skipDetail) showDetail(roleNode);
 }
 
 function navigateToSfiaFromRole(roleId, bandIdx, nodeId) {
@@ -430,7 +451,10 @@ function expandAll() {
   update(root);
 }
 function collapseAll() {
+  // Ensure root exposes families
+  if (!root.children && root._children) { root.children = root._children; root._children = null; }
   root.descendants().forEach(d => {
+    // Collapse role nodes and deeper, leaving family nodes collapsed-but-visible
     if (d.depth >= 1 && d.children) { d._children = d.children; d.children = null; }
   });
   update(root);
@@ -445,7 +469,11 @@ function showDetail(d) {
 
   const labels = {root:'Profession Framework',role_family:'Role Family',role:'Role',role_level:'Role Level',
     government_capability:'Government Capability',sfia_skill:'SFIA 9 Skill'};
-  let h = `<div class="detail-type">${labels[nd.type]||nd.type}</div><div class="detail-title">${tcNode(nd.type, nd.name)}</div>`;
+  const rawTitle = tcNode(nd.type, nd.name);
+  const displayTitle = nd.type === 'sfia_skill'
+    ? rawTitle.replace(nd.sfia_code + ' | ', '')
+    : rawTitle;
+  let h = `<div class="detail-type">${labels[nd.type]||nd.type}</div><div class="detail-title">${displayTitle}</div>`;
 
   if (nd.type === 'root') {
     const families = d.children || d._children || [];
@@ -495,6 +523,18 @@ function showDetail(d) {
   }
   if (nd.type === 'government_capability') {
     const sfias = d.children||d._children||[];
+    const roleAnc = findRoleAncestor(d);
+    if (roleAnc) {
+      const rls = roleAnc.data.role_levels || [];
+      const rid = roleAnc.data.id;
+      const bIdx = bandSelection[rid] ?? 0;
+      const suffix = nd.id.split('|').slice(1).join('|');
+      h += `<div class="detail-section"><div class="band-selector">`;
+      rls.forEach((level, i) => {
+        h += `<button class="band-pill${i===bIdx?' band-pill--active':''}" onclick="selectBandKeepNode('${rid}',${i},'${suffix}')">${toTitleCase(shortLevel(roleAnc.data.name, level.name, level.band))}</button>`;
+      });
+      h += `</div></div>`;
+    }
     if (nd.description) {
       h += `<div class="detail-section"><p style="font-size:15px;line-height:1.6;color:var(--text)">${nd.description}</p></div>`;
     }
@@ -522,6 +562,18 @@ function showDetail(d) {
     }
   }
   if (nd.type === 'sfia_skill') {
+    const roleAnc = findRoleAncestor(d);
+    if (roleAnc) {
+      const rls = roleAnc.data.role_levels || [];
+      const rid = roleAnc.data.id;
+      const bIdx = bandSelection[rid] ?? 0;
+      const suffix = nd.id.split('|').slice(1).join('|');
+      h += `<div class="detail-section"><div class="band-selector">`;
+      rls.forEach((level, i) => {
+        h += `<button class="band-pill${i===bIdx?' band-pill--active':''}" onclick="selectBandKeepNode('${rid}',${i},'${suffix}')">${toTitleCase(shortLevel(roleAnc.data.name, level.name, level.band))}</button>`;
+      });
+      h += `</div></div>`;
+    }
     const width = (nd.max != null && nd.min != null) ? nd.max - nd.min : 0;
     h += `<div class="detail-section">
       <div style="display:flex;align-items:baseline;gap:10px">
@@ -764,11 +816,11 @@ function buildSearchIndex(node) {
 }
 
 const SD_BADGE = {
-  role_family:           'background:#ee9b00;color:#3d2700',
-  role:                  'background:#0a9396;color:#fff',
-  role_level:            'background:#005f73;color:#fff',
-  government_capability: 'background:#bb3e03;color:#fff',
-  sfia_skill:            'background:#9b2226;color:#fff',
+  role_family:           'background:#bad8c4;color:#1e4030',
+  role:                  'background:#8ec0a0;color:#1e4030',
+  role_level:            'background:#3a8455;color:#fff',
+  government_capability: 'background:#60a478;color:#fff',
+  sfia_skill:            'background:#1e6038;color:#fff',
 };
 const SD_LABEL = {
   role_family: 'Family', role: 'Role', role_level: 'Level',
