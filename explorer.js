@@ -7,6 +7,13 @@ function lvlTextColor(l) {
 const GOV_LVL_COLOR = {Awareness:'#e2efe8', Working:'#8ec0a0', Practitioner:'#3a8455', Expert:'#0a4025'};
 const GOV_LVL_TEXT  = {Awareness:'#1e4030', Working:'#fff',    Practitioner:'#fff',    Expert:'#fff'};
 const GOV_LVL_ABBR  = {Awareness:'A', Working:'W', Practitioner:'P', Expert:'E'};
+const PRIORITY_BADGE = {
+  primary:   '<span style="font-size:10px;font-weight:700;letter-spacing:.06em;padding:1px 5px;border-radius:3px;background:#3a8455;color:#fff;flex-shrink:0;align-self:center">P</span>',
+  secondary: '<span style="font-size:10px;font-weight:700;letter-spacing:.06em;padding:1px 5px;border-radius:3px;background:#d8d2c8;color:#3a5a48;flex-shrink:0;align-self:center">S</span>',
+  tertiary:  '<span style="font-size:10px;font-weight:700;letter-spacing:.06em;padding:1px 5px;border-radius:3px;background:#f3f1ee;color:#6a8570;flex-shrink:0;align-self:center">T</span>',
+};
+function priorityBadge(p) { return PRIORITY_BADGE[p] || ''; }
+
 function rangeBadge(mn, mx) {
   if (mn == null) return '';
   const pip = (v) => `<span class="lvl-pip" style="background:${lvlColor(v)};color:${lvlTextColor(v)}">${v}</span>`;
@@ -512,7 +519,7 @@ function showDetail(d) {
       if (skills.length > 0) {
         h += `<div class="cap-group"><div class="cap-chip" style="cursor:pointer" onclick="navigateToSfiaFromRole('${nd.id}',${bandIdx},'${c.id}')">${govLevelBadge(c.gov_level)}<span style="flex:1">${c.name}</span><span style="color:var(--accent);font-size:15px;flex-shrink:0">→</span></div><div class="skills-rail">`;
         skills.forEach(s => {
-          h += `<div class="sfia-chip" style="cursor:pointer" onclick="navigateToSfiaFromRole('${nd.id}',${bandIdx},'${s.id}')">${rangeBadge(s.min,s.max)}<span style="flex:1">${s.name.replace(/^[A-Z]+ — /,'')}</span><span style="color:var(--accent);font-size:15px;flex-shrink:0">→</span></div>`;
+          h += `<div class="sfia-chip" style="cursor:pointer" onclick="navigateToSfiaFromRole('${nd.id}',${bandIdx},'${s.id}')">${rangeBadge(s.min,s.max)}${priorityBadge(s.priority)}<span style="flex:1">${s.name.replace(/^[A-Z]+ — /,'')}</span><span style="color:var(--accent);font-size:15px;flex-shrink:0">→</span></div>`;
         });
         h += `</div></div>`;
       } else {
@@ -554,7 +561,7 @@ function showDetail(d) {
     if (sfias.length) {
       h += `<div class="detail-section"><h3>SFIA skills (${sfias.length})</h3>`;
       sfias.forEach(s => {
-        h += `<div class="sfia-chip" style="cursor:pointer" onclick="navigateToNode('${s.data.id}')">${rangeBadge(s.data.min,s.data.max)}<span style="flex:1">${s.data.name.replace(/^[A-Z]+ — /,'')}</span><span style="color:var(--accent);font-size:15px;flex-shrink:0">→</span></div>`;
+        h += `<div class="sfia-chip" style="cursor:pointer" onclick="navigateToNode('${s.data.id}')">${rangeBadge(s.data.min,s.data.max)}${priorityBadge(s.data.priority)}<span style="flex:1">${s.data.name.replace(/^[A-Z]+ — /,'')}</span><span style="color:var(--accent);font-size:15px;flex-shrink:0">→</span></div>`;
       });
       h += `</div>`;
     } else {
