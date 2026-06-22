@@ -6,6 +6,7 @@ __pycache__/
 /data/outputs/*
 /web/*.html
 !/data/processed/README.md
+!/data/processed/capability_skill_priority.csv
 !/data/outputs/README.md
 !/web/README.md
 !/web/index.html

@@ -14,6 +14,13 @@ def build_tree():
     g = json.loads((ROOT / 'data' / 'processed' / 'role_capability_sfia_graph.json').read_text(encoding='utf-8'))
     summary = pd.read_csv(ROOT / 'data' / 'processed' / 'role_level_sfia_level_summary.csv')
 
+    # Load skill priority lookup: (capability_name, sfia_code) -> priority
+    priority_df = pd.read_csv(ROOT / 'data' / 'processed' / 'capability_skill_priority.csv')
+    skill_priority: dict[tuple, str] = {
+        (str(r['government_capability']).strip(), str(r['sfia_code']).strip()): str(r['priority']).strip()
+        for _, r in priority_df.iterrows()
+    }
+
     # Build gov capability description lookups from raw CSV
     raw_csv = next((ROOT / 'data' / 'raw').glob('*.csv'))
     raw_df = pd.read_csv(raw_csv, encoding='utf-8-sig')
@@ -79,12 +86,18 @@ def build_tree():
 
     def capability_node(rl_id: str, cap_id: str) -> dict:
         n = nodes[cap_id]
+        cap_name = n['label']
         gov_level = cap_level_for.get((rl_id, cap_id), '')
-        sfia_children = [
-            sfia_node_for_role_level(rl_id, s)
-            for s in children_of.get(cap_id, [])
-            if nodes.get(s, {}).get('type') == 'sfia_skill'
-        ]
+        sfia_children = []
+        for s in children_of.get(cap_id, []):
+            if nodes.get(s, {}).get('type') != 'sfia_skill':
+                continue
+            child = sfia_node_for_role_level(rl_id, s)
+            child['priority'] = skill_priority.get((cap_name, child['sfia_code']), '')
+            sfia_children.append(child)
+        # Sort: primary → secondary → tertiary → unprioritised
+        _order = {'primary': 0, 'secondary': 1, 'tertiary': 2}
+        sfia_children.sort(key=lambda c: _order.get(c.get('priority', ''), 9))
         return {
             'id': f"{rl_id}|{cap_id}",
             'name': n['label'],

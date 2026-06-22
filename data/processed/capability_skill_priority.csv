@@ -1,0 +1,133 @@
+government_capability,sfia_code,sfia_skill,score,priority,needs_review
+Adapting to delivery methodologies,DEMG,Delivery management,0.3333333333333333,primary,
+Adapting to delivery methodologies,METL,Methods and tools,0.0,secondary,
+Agile and Lean practices,DEMG,Delivery management,0.0,primary,YES
+Agile and Lean practices,METL,Methods and tools,0.0,secondary,YES
+Agile research practices,URCH,User research,0.3333333333333333,primary,
+Agile research practices,METL,Methods and tools,0.0,secondary,
+Agile working,DEMG,Delivery management,0.0,primary,YES
+Agile working,METL,Methods and tools,0.0,secondary,YES
+Analysis and insight,BINT,Business intelligence,0.0,primary,YES
+Analysis and insight,DAAN,Data analytics,0.0,secondary,YES
+Analysis and synthesis,UNAN,User experience analysis,0.5,primary,
+Analysis and synthesis,URCH,User research,0.0,secondary,
+"Applied maths, statistics and scientific practices",DAAN,Data analytics,0.0,primary,YES
+"Applied maths, statistics and scientific practices",DATS,Data science,0.0,secondary,YES
+Architect for the whole context,STPL,Enterprise and business architecture,0.0,primary,YES
+Architect for the whole context,ARCH,Solution architecture,0.0,secondary,YES
+Architecture communication,STPL,Enterprise and business architecture,0.5,primary,
+Architecture communication,ARCH,Solution architecture,0.5,secondary,
+Asset and configuration management,ASMG,Asset management,0.6666666666666666,primary,
+Asset and configuration management,CFMG,Configuration management,0.6666666666666666,secondary,
+Availability and capacity management,AVMT,Availability management,0.6666666666666666,primary,
+Availability and capacity management,CPMG,Capacity management,0.6666666666666666,secondary,
+Business architecture,STPL,Enterprise and business architecture,1.0,primary,
+Business architecture,BSMO,Business modelling,0.5,secondary,
+Commercial perspective,SORC,Sourcing,0.0,primary,YES
+Commercial perspective,SUPP,Supplier management,0.0,secondary,YES
+Communicating analysis and insight,DAAN,Data analytics,0.0,primary,YES
+Communicating analysis and insight,VISL,Data visualisation,0.0,secondary,YES
+Content management and architecture,INCA,Content design and authoring,0.3333333333333333,primary,
+Content management and architecture,ICPM,Content publishing,0.3333333333333333,secondary,
+Continual service improvement,BPRE,Business process improvement,0.3333333333333333,primary,
+Continual service improvement,ITMG,Technology service management,0.3333333333333333,secondary,
+Creating value for money,COMG,Cost management,0.0,primary,YES
+Creating value for money,INVA,Investment appraisal,0.0,secondary,YES
+Data analysis and synthesis,DAAN,Data analytics,0.3333333333333333,primary,
+Data analysis and synthesis,DATS,Data science,0.3333333333333333,secondary,
+Data ethics and privacy,AIDE,Artificial intelligence (AI) and data ethics,0.6666666666666666,primary,
+Data ethics and privacy,PEDP,Information and data compliance,0.3333333333333333,secondary,
+Data innovation,INOV,Innovation management,0.5,primary,
+Data innovation,EMRG,Emerging technology monitoring,0.0,secondary,
+"Defining and managing business needs, user needs and requirements",BUSA,Business situation analysis,0.14285714285714285,primary,
+"Defining and managing business needs, user needs and requirements",REQM,Requirements definition and management,0.14285714285714285,secondary,
+Delivering business impact,BINT,Business intelligence,0.3333333333333333,primary,
+Delivering business impact,DAAN,Data analytics,0.0,secondary,
+Delivering business impact through data,BINT,Business intelligence,0.2,primary,
+Delivering business impact through data,DAAN,Data analytics,0.2,secondary,
+Designing and executing tests,TEST,Functional testing,0.0,primary,YES
+Designing and executing tests,NFTS,Non-functional testing,0.0,secondary,YES
+Designing for everyone,ACIN,Accessibility and inclusion,0.0,primary,YES
+Designing for everyone,SUST,Sustainability,0.0,secondary,YES
+Designing strategically,OCDV,Organisational capability development,0.0,primary,YES
+Designing strategically,ITSP,Strategic planning,0.0,secondary,YES
+Designing strategically,HCEV,User experience design,0.0,tertiary,YES
+Designing together,RLMT,Stakeholder relationship management,0.0,primary,YES
+Designing together,HCEV,User experience design,0.0,secondary,YES
+Developing data science capability,DATS,Data science,0.5,primary,
+Developing data science capability,OCDV,Organisational capability development,0.25,secondary,
+Digital and data systems analysis,BUSA,Business situation analysis,0.25,primary,
+Digital and data systems analysis,DAAN,Data analytics,0.25,secondary,
+Evaluation delivery,RSCH,Formal research,0.0,primary,YES
+Evaluation delivery,MEAS,Measurement,0.0,secondary,YES
+Evidence-based design,HCEV,User experience design,0.5,primary,
+Evidence-based design,URCH,User research,0.0,secondary,
+Governance and assurance,GOVN,Governance,0.5,primary,
+Governance and assurance,QUAS,Quality assurance,0.5,secondary,
+IT infrastructure,IFDN,Infrastructure design,0.5,primary,
+IT infrastructure,ITOP,Infrastructure operations,0.5,secondary,
+IT service reporting,SLMO,Service level management,0.3333333333333333,primary,
+IT service reporting,MEAS,Measurement,0.0,secondary,
+Inclusive research,URCH,User research,0.5,primary,
+Inclusive research,ACIN,Accessibility and inclusion,0.0,secondary,
+Leading design,HCEV,User experience design,0.5,primary,
+Leading design,OCDV,Organisational capability development,0.0,secondary,
+Life cycle management,DEMG,Delivery management,0.3333333333333333,primary,
+Life cycle management,PROD,Product management,0.3333333333333333,secondary,
+Making architectural decisions,STPL,Enterprise and business architecture,0.0,primary,YES
+Making architectural decisions,ARCH,Solution architecture,0.0,secondary,YES
+Managing a data project,DAAN,Data analytics,0.3333333333333333,primary,
+Managing a data project,PRMG,Project management,0.3333333333333333,secondary,
+"Managing, reporting and resolving defects",TEST,Functional testing,0.0,primary,YES
+"Managing, reporting and resolving defects",NFTS,Non-functional testing,0.0,secondary,YES
+"Managing, reporting and resolving defects",QUAS,Quality assurance,0.0,tertiary,YES
+Modern development standards,METL,Methods and tools,0.0,primary,YES
+Modern development standards,SLEN,Systems and software lifecycle engineering,0.0,secondary,YES
+Product and service monitoring,PROD,Product management,0.3333333333333333,primary,
+Product and service monitoring,MEAS,Measurement,0.0,secondary,
+Programming and build (data and analytics engineering),DENG,Data engineering,0.4,primary,
+Programming and build (data and analytics engineering),PROG,Programming/software development,0.0,secondary,
+Programming and build (data science),DATS,Data science,0.5,primary,
+Programming and build (data science),PROG,Programming/software development,0.0,secondary,
+Programming and build (frontend developer),PROG,Programming/software development,0.0,primary,YES
+Programming and build (frontend developer),SWDN,Software design,0.0,secondary,YES
+Programming and build (software engineering),SLEN,Systems and software lifecycle engineering,0.5,primary,
+Programming and build (software engineering),PROG,Programming/software development,0.0,secondary,
+Prototyping,SWDN,Software design,0.0,primary,YES
+Prototyping,HCEV,User experience design,0.0,secondary,YES
+Quality assurance of data and analysis,QUAS,Quality assurance,0.5,primary,
+Quality assurance of data and analysis,DAAN,Data analytics,0.25,secondary,
+Security architecture,SCTY,Information security,0.5,primary,
+Security architecture,INAS,Information assurance,0.0,secondary,
+Service support,ASUP,Application support,0.5,primary,
+Service support,ITOP,Infrastructure operations,0.0,secondary,
+Strategic ownership,ITSP,Strategic planning,0.5,primary,
+Strategic ownership,PROD,Product management,0.0,secondary,
+Strategy design,STPL,Enterprise and business architecture,0.0,primary,YES
+Strategy design,ITSP,Strategic planning,0.0,secondary,YES
+Systems design (frontend developer),DESN,Systems design,0.5,primary,
+Systems design (frontend developer),SWDN,Software design,0.25,secondary,
+Technical design throughout the life cycle,DESN,Systems design,0.2,primary,
+Technical design throughout the life cycle,ARCH,Solution architecture,0.0,secondary,
+Test analysis,TEST,Functional testing,0.0,primary,YES
+Test analysis,NFTS,Non-functional testing,0.0,secondary,YES
+Test analysis,QUAS,Quality assurance,0.0,tertiary,YES
+Test and quality planning,QUAS,Quality assurance,0.3333333333333333,primary,
+Test and quality planning,TEST,Functional testing,0.0,secondary,
+Test engineering,TEST,Functional testing,0.0,primary,YES
+Test engineering,NFTS,Non-functional testing,0.0,secondary,YES
+Test engineering,PROG,Programming/software development,0.0,tertiary,YES
+Testing,TEST,Functional testing,1.0,primary,
+Testing,NFTS,Non-functional testing,1.0,secondary,
+Testing (business analysis),TEST,Functional testing,0.3333333333333333,primary,
+Testing (business analysis),BPTS,User acceptance testing,0.3333333333333333,secondary,
+Turning business problems into data design,DTAN,Data modelling and design,0.3333333333333333,primary,
+Turning business problems into data design,BUSA,Business situation analysis,0.16666666666666666,secondary,
+User focus,UNAN,User experience analysis,0.5,primary,
+User focus,URCH,User research,0.5,secondary,
+User focus (frontend developer),UNAN,User experience analysis,0.25,primary,
+User focus (frontend developer),HCEV,User experience design,0.25,secondary,
+User-centred practice and advocacy,UNAN,User experience analysis,0.0,primary,YES
+User-centred practice and advocacy,URCH,User research,0.0,secondary,YES
+Web performance optimisation,NFTS,Non-functional testing,0.0,primary,YES
+Web performance optimisation,PROG,Programming/software development,0.0,secondary,YES
